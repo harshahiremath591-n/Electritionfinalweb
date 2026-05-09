@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+AppData/
+NTUSER.DAT
+*.log
+node_modules/
+.env
+*.zip
+*.exe
+*.pdf
