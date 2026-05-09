@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="profile-page">
+
+<div class="profile-card">
+
+<h1>✏ Edit User</h1>
+
+<form method="POST" enctype="multipart/form-data">
+
+{% if edit_user.profile_pic %}
+
+<img
+src="data:image/png;base64,{{ edit_user.profile_pic }}"
+class="profile-big"
+>
+
+{% endif %}
+
+<input
+type="file"
+name="profile_pic"
+>
+
+<input
+type="text"
+name="username"
+value="{{ edit_user.username }}"
+required
+>
+
+<select name="role">
+
+<option value="admin"
+{% if edit_user.role == 'admin' %}
+selected
+{% endif %}
+>
+Admin
+</option>
+
+<option value="electrician"
+{% if edit_user.role == 'electrician' %}
+selected
+{% endif %}
+>
+Electrician
+</option>
+
+</select>
+
+<input
+type="password"
+name="password"
+placeholder="New Password"
+>
+
+<button type="submit">
+✅ Save Changes
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

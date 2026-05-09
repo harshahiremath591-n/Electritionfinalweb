@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="payment-container">
+
+    <!-- LEFT SIDE -->
+    <div class="payment-left">
+
+        <h1>💳 Client Payment</h1>
+
+        <p class="sub">
+            Secure Razorpay Payment Gateway
+        </p>
+
+        <div class="payment-card">
+
+            <h3>Project Payment</h3>
+
+            <form action="/payments" method="POST">
+
+                <label>Client Name</label>
+
+                <input
+                    type="text"
+                    name="client_name"
+                    placeholder="Enter client name"
+                    required
+                >
+
+                <label>Amount (₹)</label>
+
+                <input
+                    type="number"
+                    name="amount"
+                    placeholder="Enter amount"
+                    required
+                    min="1"
+                >
+
+                <button type="submit" class="pay-btn">
+                    Proceed To Pay
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="payment-right">
+
+        <img
+        src="https://cdn-icons-png.flaticon.com/512/2489/2489756.png"
+        width="280"
+        >
+
+        <h2>Fast & Secure Payments</h2>
+
+        <p>
+            Pay contractors securely using Razorpay.
+            Track all transactions in real-time.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

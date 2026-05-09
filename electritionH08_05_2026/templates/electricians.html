@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>👷 Electrician Management</h1>
+
+<div class="table-container">
+
+<table>
+
+<tr>
+<th>#</th>
+<th>Profile</th>
+<th>Username</th>
+<th>Role</th>
+<th>Actions</th>
+</tr>
+
+{% for u in users %}
+
+<tr>
+
+<td>{{ loop.index }}</td>
+
+<td>
+
+{% if u.profile_pic %}
+
+<img
+src="data:image/png;base64,{{ u.profile_pic }}"
+class="table-profile"
+>
+
+{% else %}
+
+<img
+src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+class="table-profile"
+>
+
+{% endif %}
+
+</td>
+
+<td>{{ u.username }}</td>
+
+<td>{{ u.role }}</td>
+
+<td>
+
+<a href="/edit_user/{{ u.id }}">
+
+<button class="edit-btn">
+✏ Edit
+</button>
+
+</a>
+
+<a href="/delete_user/{{ u.id }}"
+onclick="return confirm('Delete User?')">
+
+<button class="delete-btn">
+🗑 Delete
+</button>
+
+</a>
+
+<a href="/pay_electrician/{{ u.id }}">
+
+<button class="salary-btn">
+💰 Pay Salary
+</button>
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+{% endblock %}

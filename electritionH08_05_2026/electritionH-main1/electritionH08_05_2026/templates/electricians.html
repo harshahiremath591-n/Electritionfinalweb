@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>👷 Electricians</h2>
+
+<table>
+
+<tr>
+
+<th>#</th>
+<th>Name</th>
+<th>Action</th>
+
+</tr>
+
+{% for u in users %}
+
+<tr>
+
+<td>{{ loop.index }}</td>
+
+<td>{{ u.username }}</td>
+
+<td>
+
+<a href="/pay_electrician/{{ u.id }}">
+
+<button>
+💰 Pay Salary
+</button>
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

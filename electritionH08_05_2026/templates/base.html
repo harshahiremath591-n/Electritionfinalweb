@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>⚡ Electrician Management System</title>
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <!-- FONT AWESOME -->
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- GOOGLE FONT -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+{% if session.get('user_id') %}
+
+<nav>
+
+    <!-- LOGO -->
+    <div class="logo">⚡ Electrician System</div>
+
+    <!-- NAV LINKS -->
+<div class="nav-links">
+
+    <!-- DASHBOARD -->
+    <a href="/dashboard">
+        <i class="fa-solid fa-chart-line"></i>
+        Dashboard
+    </a>
+
+    <!-- ADMIN MENU -->
+    {% if session.get('role') == 'admin' %}
+
+    <a href="/jobs">
+        <i class="fa-solid fa-briefcase"></i>
+        Jobs
+    </a>
+
+    <a href="/materials">
+        <i class="fa-solid fa-box"></i>
+        Materials
+    </a>
+
+    <a href="/add_task">
+        <i class="fa-solid fa-plus"></i>
+        Add Task
+    </a>
+
+    <a href="/electricians">
+        <i class="fa-solid fa-users"></i>
+        Electricians
+    </a>
+
+    <a href="/transactions">
+        <i class="fa-solid fa-money-bill-wave"></i>
+        Payments
+    </a>
+
+    {% endif %}
+
+    <!-- ELECTRICIAN MENU -->
+    {% if session.get('role') == 'electrician' %}
+
+    <a href="/electrician_payments">
+        <i class="fa-solid fa-wallet"></i>
+        Salary
+    </a>
+
+    {% endif %}
+
+    <!-- COMMON -->
+    <a href="/reports">
+        <i class="fa-solid fa-chart-pie"></i>
+        Reports
+    </a>
+
+    <a href="/profile">
+        <i class="fa-solid fa-user"></i>
+        Profile
+    </a>
+
+    <a href="/logout">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Logout
+    </a>
+
+</div>
+
+    <!-- PROFILE IMAGE -->
+    <div class="profile">
+
+        {% if user and user.profile_pic %}
+
+        <img
+            src="data:image/png;base64,{{ user.profile_pic }}"
+            class="profile-img"
+        >
+
+        {% else %}
+
+        <img
+            src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+            class="profile-img"
+        >
+
+        {% endif %}
+
+    </div>
+
+</nav>
+
+{% endif %}
+
+<!-- ================= FLASH MESSAGES ================= -->
+
+<div class="container">
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for m in messages %}
+
+                <div class="alert">
+                    {{ m }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+    <!-- PAGE CONTENT -->
+    {% block content %}
+
+    {% endblock %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+
+<h1>Electrician Contractor Management System</h1>
+
+<button id="pay-btn">Pay ₹500</button>
+
+<script>
+
+var options = {
+    "key": "YOUR_TEST_KEY_ID",
+    "amount": "50000",
+    "currency": "INR",
+    "name": "Electrician Contractor System",
+    "description": "Project Payment",
+    "handler": function (response){
+        alert("Payment Successful");
+        console.log(response);
+    }
+};
+
+var rzp1 = new Razorpay(options);
+
+document.getElementById('pay-btn').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+
+</script>
+
+</body>
+</html>

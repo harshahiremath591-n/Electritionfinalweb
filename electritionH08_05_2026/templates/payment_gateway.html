@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Razorpay Payment</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+
+        body{
+            background:#0f172a;
+            color:white;
+            font-family:Poppins;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+
+        .box{
+            background:#1e293b;
+            padding:40px;
+            border-radius:20px;
+            text-align:center;
+            width:400px;
+        }
+
+        button{
+            background:linear-gradient(45deg,#06b6d4,#3b82f6);
+            color:white;
+            border:none;
+            padding:14px 30px;
+            border-radius:12px;
+            font-size:18px;
+            cursor:pointer;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>💳 Confirm Payment</h1>
+
+    <h2>₹{{ amount }}</h2>
+
+    <button id="pay-btn">
+        Pay Now
+    </button>
+
+</div>
+
+<script>
+
+var options = {
+
+    "key": "{{ key }}",
+
+    "amount": "{{ order['amount'] }}",
+
+    "currency": "INR",
+
+    "name": "Electrician Management System",
+
+    "description": "Client Payment",
+
+    "order_id": "{{ order['id'] }}",
+
+    "handler": function (response){
+
+        window.location.href="/payment_success";
+
+    },
+
+    "theme": {
+        "color": "#06b6d4"
+    }
+};
+
+var rzp1 = new Razorpay(options);
+
+document.getElementById('pay-btn').onclick = function(e){
+
+    rzp1.open();
+
+    e.preventDefault();
+}
+
+</script>
+
+</body>
+</html>

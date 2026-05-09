@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="profile-page">
+
+    <div class="profile-card">
+
+        <h1>👤 My Profile</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% if user.profile_pic %}
+
+            <img
+            src="data:image/png;base64,{{ user.profile_pic }}"
+            class="profile-big"
+            >
+
+            {% else %}
+
+            <img
+            src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+            class="profile-big"
+            >
+
+            {% endif %}
+
+            <input
+            type="file"
+            name="profile_pic"
+            >
+
+            <input
+            type="text"
+            name="username"
+            value="{{ user.username }}"
+            placeholder="Username"
+            required
+            >
+
+            <input
+            type="password"
+            name="password"
+            placeholder="New Password"
+            >
+
+            <button type="submit">
+                💾 Update Profile
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

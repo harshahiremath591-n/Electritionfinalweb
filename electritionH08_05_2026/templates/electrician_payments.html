@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card">
+
+<h2>
+💰 My Salary History
+</h2>
+
+<h3>
+Total Received :
+<span style="color:lime;">
+₹{{ total }}
+</span>
+</h3>
+
+</div>
+
+<div class="card">
+
+<table>
+
+<tr>
+
+<th>#</th>
+
+<th>Transaction ID</th>
+
+<th>Amount</th>
+
+<th>Method</th>
+
+<th>Status</th>
+
+<th>Date</th>
+
+</tr>
+
+{% for p in payments %}
+
+<tr>
+
+<td>
+{{ loop.index }}
+</td>
+
+<td>
+{{ p.transaction_id }}
+</td>
+
+<td style="color:lime;">
+₹{{ p.amount }}
+</td>
+
+<td>
+{{ p.payment_method }}
+</td>
+
+<td>
+
+{% if p.status == 'Success' %}
+
+<span style="color:lime;">
+Received
+</span>
+
+{% else %}
+
+<span style="color:red;">
+Failed
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if p.created_at %}
+
+{{ p.created_at.strftime('%d-%m-%Y %H:%M') }}
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+{% endblock %}

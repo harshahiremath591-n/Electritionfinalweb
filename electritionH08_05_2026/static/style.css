@@ -1,0 +1,701 @@
+/* ================= GOOGLE FONT ================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ================= BODY ================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+    color:white;
+    min-height:100vh;
+    overflow:hidden;
+}
+
+/* ================= ANIMATED BACKGROUND ================= */
+
+body::before{
+    content:'';
+    position:fixed;
+    width:500px;
+    height:500px;
+    background:#38bdf8;
+    border-radius:50%;
+    top:-150px;
+    left:-150px;
+    opacity:0.15;
+    filter:blur(120px);
+    animation:float1 8s infinite alternate;
+    z-index:-1;
+}
+
+body::after{
+    content:'';
+    position:fixed;
+    width:400px;
+    height:400px;
+    background:#8b5cf6;
+    border-radius:50%;
+    bottom:-150px;
+    right:-100px;
+    opacity:0.15;
+    filter:blur(120px);
+    animation:float2 10s infinite alternate;
+    z-index:-1;
+}
+
+@keyframes float1{
+    from{
+        transform:translateY(0px);
+    }
+    to{
+        transform:translateY(60px);
+    }
+}
+
+@keyframes float2{
+    from{
+        transform:translateY(0px);
+    }
+    to{
+        transform:translateY(-60px);
+    }
+}
+
+/* ================= NAVBAR ================= */
+
+nav{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:rgba(15,23,42,0.8);
+    backdrop-filter:blur(12px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 35px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.logo{
+    font-size:24px;
+    font-weight:700;
+    color:#38bdf8;
+}
+
+.nav-links{
+    display:flex;
+    gap:15px;
+    align-items:center;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:10px;
+    transition:0.3s;
+    font-weight:500;
+}
+
+.nav-links a:hover{
+    background:#38bdf8;
+    color:black;
+    transform:translateY(-2px);
+}
+
+/* ================= CONTAINER ================= */
+
+.container{
+    padding:30px;
+}
+
+/* ================= CARDS ================= */
+
+.card{
+    width:min(1100px,95%);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:40px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    border-radius:30px;
+    padding:60px;
+}
+
+.card:hover{
+    transform:translateY(-6px) scale(1.01);
+    box-shadow:0 15px 40px rgba(56,189,248,0.25);
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(40px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* ================= GRID ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
+
+/* ================= STAT CARD ================= */
+
+.stat-card{
+    text-align:center;
+    padding:35px 20px;
+}
+
+.stat-card h1{
+    font-size:42px;
+    margin-top:10px;
+    color:#38bdf8;
+}
+
+/* ================= TABLE ================= */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+table th{
+    background:#38bdf8;
+    color:black;
+    padding:14px;
+    text-align:left;
+}
+
+table td{
+    padding:14px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+table tr:hover{
+    background:rgba(255,255,255,0.05);
+}
+
+/* ================= BUTTON ================= */
+
+button{
+    background:linear-gradient(135deg,#a855f7,#7e22ce);
+    color:white;
+    border:none;
+    padding:12px 22px;
+    border-radius:12px;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.3s;
+    font-weight:600;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 10px 25px 
+    rgba(184, 34, 197, 0.4);
+}
+
+/* ================= INPUT ================= */
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    margin-bottom:18px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    background:rgba(255,255,255,0.08);
+    color:white;
+    font-size:15px;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+select option{
+    background:#111827;
+    color:#38bdf8;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border:1px solid #38bdf8;
+    box-shadow:0 0 10px rgba(56,189,248,0.4);
+}
+
+/* ================= PROFILE IMAGE ================= */
+
+.profile-img{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    border:4px solid #38bdf8;
+    object-fit:cover;
+    box-shadow:0 10px 25px rgba(56,189,248,0.4);
+}
+
+
+/* ================= PROFILE ================= */
+
+.profile-page{
+    display:flex;
+    justify-content:center;
+    margin-top:40px;
+}
+
+.profile-card{
+    width:420px;
+    background:rgba(255,255,255,0.08);
+    padding:35px;
+    border-radius:25px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    text-align:center;
+    backdrop-filter:blur(12px);
+}
+
+.profile-big{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #38bdf8;
+    margin-bottom:20px;
+}
+
+.profile-card input,
+.profile-card select{
+    width:100%;
+    margin:10px 0;
+}
+
+/* ================= TABLE ================= */
+
+.table-container{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+table th{
+    background:#0f172a;
+    padding:15px;
+    color:#38bdf8;
+}
+
+table td{
+    padding:15px;
+    background:rgba(255,255,255,0.05);
+    text-align:center;
+}
+
+.table-profile{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+/* BUTTONS */
+
+.edit-btn{
+    background:#0ea5e9;
+    color:white;
+}
+
+.delete-btn{
+    background:#ef4444;
+    color:white;
+}
+
+.salary-btn{
+    background:#22c55e;
+    color:white;
+}
+
+
+/* ================= TASK STATUS ================= */
+
+.pending{
+    color:orange;
+    font-weight:bold;
+}
+
+.processing{
+    color:#38bdf8;
+    font-weight:bold;
+}
+
+.completed{
+    color:lime;
+    font-weight:bold;
+}
+
+/* ================= ALERT ================= */
+
+.alert{
+    padding:14px;
+    background:#22c55e;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+/* ================= SCROLLBAR ================= */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#38bdf8;
+    border-radius:20px;
+}
+
+/* ================= MOBILE ================= */
+
+/* ================= AUTO RESPONSIVE ================= */
+
+html{
+    font-size:100%;
+}
+
+img{
+    max-width:100%;
+    height:auto;
+}
+
+.card{
+    width:min(1100px,95%);
+}
+
+.left h1{
+    font-size:clamp(32px,5vw,58px);
+}
+
+.left p{
+    font-size:clamp(14px,2vw,18px);
+}
+
+.circle{
+    width:min(320px,75vw);
+    height:min(320px,75vw);
+}
+
+.buttons{
+    flex-wrap:wrap;
+}
+
+.btn{
+    width:auto;
+}
+
+@media(max-width:1024px){
+
+    .card{
+
+        flex-direction:column;
+
+        gap:40px;
+
+        padding:40px 25px;
+
+        text-align:center;
+
+    }
+
+    .left,
+    .right{
+
+        width:100%;
+
+    }
+
+    .features{
+
+        justify-content:center;
+
+        flex-wrap:wrap;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    body{
+        overflow-y:auto;
+        overflow-x:hidden;
+    }
+
+    nav{
+
+        flex-direction:column;
+
+        gap:15px;
+
+        padding:20px;
+
+    }
+
+    .nav-links{
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+
+        gap:10px;
+
+    }
+
+    .nav-links a{
+
+        margin-left:0;
+
+    }
+
+    .hero{
+
+        padding:20px;
+
+        height:auto;
+
+        min-height:100vh;
+
+    }
+
+    .card{
+
+        padding:30px 20px;
+
+        border-radius:20px;
+
+    }
+
+    .buttons{
+
+        flex-direction:column;
+
+        width:100%;
+
+    }
+
+    .btn{
+
+        width:100%;
+
+    }
+
+    .features{
+
+        flex-direction:column;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .left h1{
+
+        font-size:30px;
+
+    }
+
+    .tag{
+
+        font-size:12px;
+
+    }
+
+    .left p{
+
+        font-size:14px;
+
+        line-height:1.6;
+
+    }
+
+    .feature{
+
+        padding:15px;
+
+    }
+
+}
+
+/* ================= REPORT LINK COLOR ================= */
+
+.report-link{
+    color:#22c55e;
+    font-weight:600;
+    text-decoration:none;
+}
+
+.report-link:hover{
+    color:#38bdf8;
+}
+
+/* ================= PAYMENT PAGE ================= */
+
+.payment-page{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    gap:40px;
+}
+
+.payment-left,
+.payment-right{
+    flex:1;
+}
+
+.payment-card{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    padding:40px;
+    border-radius:30px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    animation:fadeUp 0.8s ease;
+}
+
+.payment-icon{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#7c3aed,#a855f7);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    margin-bottom:20px;
+}
+
+.payment-card h1{
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+.payment-card p{
+    opacity:0.8;
+    line-height:1.7;
+}
+
+.payment-info{
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:20px;
+}
+
+.info-box{
+    background:rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:18px;
+}
+
+.info-box h3{
+    margin-bottom:10px;
+    color:#38bdf8;
+}
+
+#pay-btn{
+    width:100%;
+    margin-top:30px;
+    padding:18px;
+    font-size:18px;
+    border:none;
+    border-radius:15px;
+    background:linear-gradient(135deg,#7c3aed,#a855f7);
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+    font-weight:600;
+}
+
+#pay-btn:hover{
+    transform:scale(1.03);
+    box-shadow:0 10px 30px rgba(168,85,247,0.4);
+}
+
+.back-btn{
+    width:100%;
+    background:linear-gradient(135deg,#334155,#1e293b);
+}
+
+.payment-image{
+    width:100%;
+    max-width:500px;
+    animation:floatimg 4s infinite ease-in-out;
+}
+
+@keyframes floatimg{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-20px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+
+}
+
+@media(max-width:900px){
+
+    .payment-page{
+        flex-direction:column;
+    }
+
+}
+
+/*-----smoth logout button-----*/
+.nav-links a:last-child{
+    background:#ef4444;
+}
+
+.nav-links a:last-child:hover{
+    background:#dc2626;
+    color:white;
+}
+
+/*-----smooth animation-----*/
+
+*{
+    scroll-behavior:smooth;
+}
+
+.card,
+button,
+a{
+    transition:all 0.3s ease;
+}
+
