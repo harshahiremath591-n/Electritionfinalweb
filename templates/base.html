@@ -10,28 +10,22 @@ name="viewport"
 content="width=device-width, initial-scale=1.0"
 >
 
-<title>⚡ Electrician Management System</title>
+<title>⚡ EMS</title>
 
-<!-- CSS -->
 <link
 rel="stylesheet"
 href="{{ url_for('static', filename='style.css') }}"
 >
 
-<!-- GOOGLE FONT -->
 <link
 href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
 rel="stylesheet"
 >
 
-<!-- FONT AWESOME -->
 <link
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 rel="stylesheet"
 >
-
-<!-- CHART JS -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
@@ -45,7 +39,7 @@ font-family:'Poppins',sans-serif;
 }
 
 body{
-background:#0f172a;
+background:#081120;
 color:white;
 overflow-x:hidden;
 }
@@ -56,30 +50,30 @@ overflow-x:hidden;
 position:fixed;
 top:0;
 right:0;
-width:270px;
+width:260px;
 height:100vh;
-background:#111827;
+background:#0f172a;
 padding:20px;
 overflow-y:auto;
+border-left:2px solid #f59e0b;
 z-index:1000;
-border-left:3px solid #f59e0b;
 transition:0.4s;
 }
 
 .logo{
-font-size:24px;
+font-size:28px;
 font-weight:700;
-text-align:center;
-margin-bottom:25px;
 color:#f59e0b;
+margin-bottom:35px;
+text-align:center;
 }
 
-/* ================= BUTTONS ================= */
+/* ================= MENU ================= */
 
 .sidebar-links{
 display:flex;
 flex-direction:column;
-gap:12px;
+gap:14px;
 }
 
 .sidebar-links a{
@@ -88,23 +82,24 @@ text-decoration:none;
 
 .side-btn{
 width:100%;
-padding:14px;
+padding:15px;
 border:none;
-border-radius:12px;
+border-radius:14px;
 background:#1e293b;
 color:white;
 font-size:15px;
 font-weight:600;
-cursor:pointer;
 display:flex;
 align-items:center;
 gap:12px;
+cursor:pointer;
 transition:0.3s;
 }
 
 .side-btn:hover{
 background:#f59e0b;
-transform:translateX(-5px);
+color:black;
+transform:translateX(-6px);
 }
 
 .logout-btn{
@@ -113,6 +108,7 @@ background:#dc2626;
 
 .logout-btn:hover{
 background:#ef4444;
+color:white;
 }
 
 /* ================= TOPBAR ================= */
@@ -121,37 +117,39 @@ background:#ef4444;
 position:fixed;
 top:0;
 left:0;
-right:270px;
-height:70px;
-background:#111827;
+right:260px;
+height:75px;
+background:#0f172a;
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 20px;
-z-index:999;
+padding:0 25px;
 border-bottom:2px solid #f59e0b;
+z-index:999;
 }
 
 .topbar h2{
+font-size:28px;
 color:#f59e0b;
-font-size:24px;
 }
 
-.theme-btn{
+.theme-btn,
+.menu-btn{
 background:#f59e0b;
 border:none;
 padding:10px 14px;
 border-radius:10px;
-cursor:pointer;
 font-size:18px;
+cursor:pointer;
+font-weight:bold;
 }
 
-/* ================= CONTENT ================= */
+/* ================= MAIN ================= */
 
 .main-content{
-margin-right:270px;
+margin-right:260px;
 padding:100px 25px 30px;
-min-height:100vh;
+width:calc(100% - 260px);
 }
 
 /* ================= ALERT ================= */
@@ -160,7 +158,7 @@ min-height:100vh;
 background:#16a34a;
 padding:15px;
 margin-bottom:15px;
-border-radius:10px;
+border-radius:12px;
 font-weight:600;
 }
 
@@ -169,45 +167,27 @@ font-weight:600;
 .notification{
 position:fixed;
 bottom:20px;
-right:20px;
+left:20px;
 background:#f59e0b;
-padding:14px 20px;
-border-radius:12px;
-font-weight:600;
-display:none;
-z-index:2000;
 color:black;
+padding:14px 18px;
+border-radius:12px;
+font-weight:700;
+display:none;
+z-index:3000;
 }
 
 .notification.show{
 display:block;
-animation:fadein 0.5s;
-}
-
-@keyframes fadein{
-from{
-opacity:0;
-transform:translateY(20px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
 }
 
 /* ================= MOBILE ================= */
 
-.menu-btn{
+.close-btn{
 display:none;
-background:#f59e0b;
-border:none;
-padding:10px 14px;
-border-radius:10px;
-font-size:18px;
-cursor:pointer;
 }
 
-.close-btn{
+.menu-btn{
 display:none;
 }
 
@@ -227,7 +207,8 @@ right:0;
 
 .main-content{
 margin-right:0;
-padding:90px 15px;
+width:100%;
+padding:95px 15px 20px;
 }
 
 .menu-btn{
@@ -236,12 +217,23 @@ display:block;
 
 .close-btn{
 display:block;
-font-size:25px;
 text-align:right;
-margin-bottom:20px;
+font-size:24px;
+margin-bottom:15px;
 cursor:pointer;
 }
 
+}
+
+/* ================= SCROLLBAR ================= */
+
+::-webkit-scrollbar{
+width:6px;
+}
+
+::-webkit-scrollbar-thumb{
+background:#38bdf8;
+border-radius:20px;
 }
 
 </style>
@@ -259,18 +251,15 @@ class="sidebar"
 id="sidebar"
 >
 
-<div class="logo">
+<div class="close-btn" onclick="toggleSidebar()">
 
-⚡ Electrician System
+<i class="fa-solid fa-xmark"></i>
 
 </div>
 
-<div
-class="close-btn"
-onclick="toggleSidebar()"
->
+<div class="logo">
 
-<i class="fa-solid fa-xmark"></i>
+⚡ Electrician System
 
 </div>
 
@@ -436,7 +425,7 @@ class="notification"
 
 </div>
 
-<!-- ================= MAIN CONTENT ================= -->
+<!-- ================= CONTENT ================= -->
 
 <div class="main-content">
 
@@ -467,7 +456,7 @@ class="notification"
 
 <script>
 
-/* ================= SIDEBAR ================= */
+/* SIDEBAR */
 
 function toggleSidebar(){
 
@@ -478,66 +467,27 @@ document
 
 }
 
-/* ================= THEME ================= */
+/* THEME */
 
 function toggleTheme(){
 
 document.body.classList.toggle("light-mode");
 
-if(document.body.classList.contains("light-mode")){
-
-localStorage.setItem("theme","light");
-
-}else{
-
-localStorage.setItem("theme","dark");
-
 }
 
-}
-
-/* ================= LOAD THEME ================= */
-
-window.addEventListener("load",()=>{
-
-const savedTheme=localStorage.getItem("theme");
-
-if(savedTheme==="light"){
-
-document.body.classList.add("light-mode");
-
-}
-
-});
-
-/* ================= AUTO LOGOUT ================= */
-
-let logoutTimer;
-
-function resetTimer(){
-
-clearTimeout(logoutTimer);
-
-logoutTimer=setTimeout(()=>{
-
-window.location.href="/logout";
-
-},600000);
-
-}
-
-window.onload=resetTimer;
-
-document.onmousemove=resetTimer;
-document.onkeypress=resetTimer;
-document.onclick=resetTimer;
-document.onscroll=resetTimer;
-
-/* ================= LIVE NOTIFICATION ================= */
+/* AUTO REFRESH */
 
 setInterval(()=>{
 
-const notification=
+location.reload();
+
+},600000);
+
+/* NOTIFICATION */
+
+setInterval(()=>{
+
+const notification =
 document.getElementById("notification");
 
 notification.classList.add("show");
@@ -549,30 +499,6 @@ notification.classList.remove("show");
 },3000);
 
 },15000);
-
-/* ================= AUTO REFRESH ================= */
-
-setInterval(()=>{
-
-location.reload();
-
-},600000);
-
-</script>
-
-<!-- SOCKET IO -->
-
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-
-<script>
-
-const socket = io();
-
-socket.on('connect', () => {
-
-console.log("Socket Connected");
-
-});
 
 </script>
 
