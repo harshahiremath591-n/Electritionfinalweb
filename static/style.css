@@ -622,3 +622,63 @@ body.light-mode table td{
     transform:translateY(-5px);
     box-shadow:0 10px 30px rgba(56,189,248,0.4);
 }
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    overflow-x:hidden;
+    width:100%;
+}
+
+img{
+    max-width:100%;
+}
+
+table{
+    width:100%;
+    overflow-x:auto;
+    display:block;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    width:100%;
+    overflow:hidden;
+}
+
+button{
+    width:100%;
+    margin-top:10px;
+}
+
+input,
+select{
+    width:100%;
+}
+
+canvas{
+    max-width:100%;
+}
+
+@media(max-width:768px){
+
+    h1,h2,h3{
+        font-size:20px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .card{
+        padding:15px;
+    }
+
+}

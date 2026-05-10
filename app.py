@@ -1188,54 +1188,76 @@ def material_usage():
 
     if request.method == 'POST':
 
-        electrician_id = request.form.get(
-            'electrician_id'
-        )
+        try:
 
-        material_id = request.form.get(
-            'material_id'
-        )
+            electrician_id = request.form.get(
+                'electrician_id'
+            )
 
-        used_quantity = int(
-            request.form.get('used_quantity')
-        )
+            material_id = request.form.get(
+                'material_id'
+            )
 
-        material = db.session.get(
-            Material,
-            material_id
-        )
+            used_quantity = request.form.get(
+                'used_quantity'
+            )
 
-        # CHECK STOCK
+            if not electrician_id or not material_id or not used_quantity:
 
-        if used_quantity > material.quantity:
+                flash("⚠️ All Fields Required")
 
-            flash("❌ Not Enough Stock")
+                return redirect('/material_usage')
 
-            return redirect('/material_usage')
+            used_quantity = int(used_quantity)
 
-        # SAVE USAGE
+            material = db.session.get(
+                Material,
+                int(material_id)
+            )
 
-        usage = MaterialUsage(
+            if not material:
 
-            electrician_id=electrician_id,
+                flash("❌ Material Not Found")
 
-            material_id=material_id,
+                return redirect('/material_usage')
 
-            used_quantity=used_quantity
+            if used_quantity <= 0:
 
-        )
+                flash("❌ Invalid Quantity")
 
-        # AUTO REDUCE STOCK
+                return redirect('/material_usage')
 
-        material.quantity -= used_quantity
+            if used_quantity > material.quantity:
 
-        db.session.add(usage)
+                flash("❌ Not Enough Stock")
 
-        db.session.commit()
+                return redirect('/material_usage')
 
-        flash("✅ Material Usage Saved")
+            usage = MaterialUsage(
 
-        return redirect('/material_usage')
+                electrician_id=int(electrician_id),
+
+                material_id=int(material_id),
+
+                used_quantity=used_quantity
+
+            )
+
+            material.quantity -= used_quantity
+
+            db.session.add(usage)
+
+            db.session.commit()
+
+            flash("✅ Usage Saved Successfully")
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            print("MATERIAL USAGE ERROR:", e)
+
+            flash("❌ Internal Server Error")
 
     usages = MaterialUsage.query.order_by(
         MaterialUsage.id.desc()
