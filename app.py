@@ -1,11 +1,22 @@
 from flask import Flask, render_template, request, redirect, session, flash, send_file
 from config import Config
-from models import db, User, Task, Job, Material, Payment, MaterialUsage, Attendance, Location
+from fpdf import FPDF
+from models import (
+    db,
+    User,
+    Task,
+    Job,
+    Material,
+    Payment,
+    MaterialUsage,
+    Attendance,
+    Location
+)
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask_socketio import SocketIO
-from fpdf import FPDF
+
 
 import os
 import base64
@@ -1117,7 +1128,9 @@ def location():
         data=data
     )
     
-    #====pdf======
+    
+# ================= PDF INVOICE =================
+
 @app.route('/invoice/<int:id>')
 @login_required
 def invoice(id):
@@ -1146,7 +1159,7 @@ def invoice(id):
 
     pdf.cell(200, 10, txt=f"Location : {job.location}", ln=True)
 
-    pdf.cell(200, 10, txt=f"Generated : {datetime.now()}", ln=True)
+    pdf.cell(200, 10, txt=f"Date : {datetime.now().strftime('%d-%m-%Y')}", ln=True)
 
     file_name = f"invoice_{id}.pdf"
 
