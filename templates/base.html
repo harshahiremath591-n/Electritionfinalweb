@@ -485,20 +485,20 @@ location.reload();
 
 /* NOTIFICATION */
 
-setInterval(()=>{
+function showNotification(){
+    const notification = document.getElementById("notification");
 
-const notification =
-document.getElementById("notification");
+    if(!notification) return;
 
-notification.classList.add("show");
+    notification.classList.add("show");
 
-setTimeout(()=>{
+    setTimeout(()=>{
+        notification.classList.remove("show");
+    },3000);
+}
 
-notification.classList.remove("show");
-
-},3000);
-
-},15000);
+/* every 15 sec */
+setInterval(showNotification,15000);
 
 </script>
 
