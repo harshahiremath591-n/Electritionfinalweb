@@ -1,113 +1,213 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h2>⚡ Dashboard</h2>
+<h1 style="margin-bottom:25px;">
+⚡ Dashboard
+</h1>
 
-<!-- ================= USER INFO ================= -->
-<div class="card" style="text-align:center;">
+<!-- ================= PROFILE ================= -->
 
-    {% if user and user.profile_pic %}
-    <img src="data:image/png;base64,{{ user.profile_pic }}"
-         width="120"
-         height="120"
-         style="border-radius:50%; border:4px solid #38bdf8; object-fit:cover;">
-    {% else %}
-    <img src="https://via.placeholder.com/120"
-         width="120"
-         height="120"
-         style="border-radius:50%;">
-    {% endif %}
+<div class="card profile-card-dashboard">
 
-    <h2>{{ session.get('username') }}</h2>
+<div style="width:100%; text-align:center;">
 
-    <p>
-        Role :
-        <b style="color:#38bdf8;">
-            {{ session.get('role') }}
-        </b>
-    </p>
+{% if user and user.profile_pic %}
 
-</div>
+<img
+src="data:image/png;base64,{{ user.profile_pic }}"
+class="profile-big"
+>
 
-<!-- ========================================================= -->
-<!-- ================= ADMIN DASHBOARD ======================= -->
-<!-- ========================================================= -->
+{% else %}
 
-{% if session.get('role') == 'admin' %}
+<img
+src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+class="profile-big"
+>
 
-<div class="grid">
+{% endif %}
 
-    <div class="card stat-card">
-        <h3>✅ Completed</h3>
-        <h1>{{ completed }}</h1>
-    </div>
+<h2 style="margin-top:15px;">
+{{ session.get('username') }}
+</h2>
 
-    <div class="card stat-card">
-        <h3>⏳ Pending</h3>
-        <h1>{{ pending }}</h1>
-    </div>
+<p>
 
-    <div class="card stat-card">
-        <h3>🔄 Processing</h3>
-        <h1>{{ processing }}</h1>
-    </div>
+Role :
 
-    <div class="card stat-card">
-        <h3>👷 Electricians</h3>
-        <h1>{{ total_users }}</h1>
-    </div>
+<b style="color:#38bdf8;">
+{{ session.get('role') }}
+</b>
+
+</p>
 
 </div>
 
-<!-- ================= CHART ================= -->
+</div>
+
+<!-- ================= GPS LOCATION ================= -->
 
 <div class="card">
 
-    <canvas id="chart"></canvas>
+<div style="width:100%;">
+
+<h2>
+📍 Live Location
+</h2>
+
+<p id="locationText">
+Detecting Location...
+</p>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</div>
+
+<!-- ================================================= -->
+<!-- ================= ADMIN DASHBOARD =============== -->
+<!-- ================================================= -->
+
+{% if session.get('role') == 'admin' %}
+
+<!-- ================= STATS ================= -->
+
+<div class="grid">
+
+<div class="card stat-card">
+
+<h3>✅ Completed</h3>
+
+<h1>{{ completed }}</h1>
+
+</div>
+
+<div class="card stat-card">
+
+<h3>⏳ Pending</h3>
+
+<h1>{{ pending }}</h1>
+
+</div>
+
+<div class="card stat-card">
+
+<h3>🔄 Processing</h3>
+
+<h1>{{ processing }}</h1>
+
+</div>
+
+<div class="card stat-card">
+
+<h3>👷 Electricians</h3>
+
+<h1>{{ total_users }}</h1>
+
+</div>
+
+</div>
+
+<!-- ================= ANALYTICS ================= -->
+
+<div class="card">
+
+<div style="width:100%;">
+
+<h2 style="margin-bottom:20px;">
+📊 Live Analytics
+</h2>
+
+<canvas id="chart"></canvas>
+
+</div>
+
+</div>
 
 <script>
 
-new Chart(document.getElementById('chart'), {
+const ctx = document.getElementById('chart');
 
-    type: 'doughnut',
+new Chart(ctx, {
 
-    data: {
+type: 'doughnut',
 
-        labels: [
-            'Completed',
-            'Pending',
-            'Processing'
-        ],
+data: {
 
-        datasets: [{
+labels: [
 
-            data: [
-                {{ completed }},
-                {{ pending }},
-                {{ processing }}
-            ],
+'Completed',
 
-            backgroundColor: [
-                '#22c55e',
-                '#f59e0b',
-                '#3b82f6'
-            ]
+'Pending',
 
-        }]
-    }
+'Processing'
+
+],
+
+datasets: [{
+
+label: 'Tasks',
+
+data: [
+
+{{ completed }},
+
+{{ pending }},
+
+{{ processing }}
+
+],
+
+backgroundColor: [
+
+'#22c55e',
+
+'#f59e0b',
+
+'#3b82f6'
+
+],
+
+borderWidth: 2
+
+}]
+
+},
+
+options: {
+
+responsive: true,
+
+plugins: {
+
+legend: {
+
+labels: {
+
+color: 'white'
+
+}
+
+}
+
+}
+
+}
+
 });
 
 </script>
 
-<!-- ================= ADMIN CONTROLS ================= -->
+<!-- ================= QUICK CONTROLS ================= -->
 
 <div class="card">
 
-<h3>🛠 Admin Controls</h3>
+<div style="width:100%;">
+
+<h2 style="margin-bottom:20px;">
+🛠 Admin Controls
+</h2>
+
+<div class="grid">
 
 <a href="/add_task">
 <button>➕ Assign Task</button>
@@ -126,7 +226,7 @@ new Chart(document.getElementById('chart'), {
 </a>
 
 <a href="/payments">
-<button>💳 Client Payment</button>
+<button>💳 Payments</button>
 </a>
 
 <a href="/transactions">
@@ -137,17 +237,41 @@ new Chart(document.getElementById('chart'), {
 <button>📊 Reports</button>
 </a>
 
+<a href="/attendance">
+<button>👷 Attendance</button>
+</a>
+
+<a href="/location">
+<button>📍 GPS Tracking</button>
+</a>
+
+<a href="/material_usage">
+<button>📦 Material Usage</button>
+</a>
+
+</div>
+
+</div>
+
 </div>
 
 <!-- ================= TASK HISTORY ================= -->
 
 <div class="card">
 
-<h3>📋 Task History</h3>
+<div style="width:100%;">
 
-<table width="100%" cellpadding="10">
+<h2 style="margin-bottom:20px;">
+📋 Task History
+</h2>
 
-<tr style="background:#111827;">
+{% if tasks %}
+
+<div class="table-container">
+
+<table>
+
+<tr>
 
 <th>#</th>
 <th>Task</th>
@@ -155,6 +279,7 @@ new Chart(document.getElementById('chart'), {
 <th>Created</th>
 <th>Completed</th>
 <th>Report</th>
+<th>Delete</th>
 
 </tr>
 
@@ -170,19 +295,19 @@ new Chart(document.getElementById('chart'), {
 
 {% if t.status == 'Completed' %}
 
-<span style="color:lime;">
+<span class="completed">
 ✅ Completed
 </span>
 
 {% elif t.status == 'Processing' %}
 
-<span style="color:skyblue;">
+<span class="processing">
 🔄 Processing
 </span>
 
 {% else %}
 
-<span style="color:orange;">
+<span class="pending">
 ⏳ Pending
 </span>
 
@@ -193,9 +318,13 @@ new Chart(document.getElementById('chart'), {
 <td>
 
 {% if t.created_at %}
+
 {{ t.created_at.strftime('%d-%m-%Y') }}
+
 {% else %}
+
 -
+
 {% endif %}
 
 </td>
@@ -203,9 +332,13 @@ new Chart(document.getElementById('chart'), {
 <td>
 
 {% if t.completed_at %}
+
 {{ t.completed_at.strftime('%d-%m-%Y') }}
+
 {% else %}
+
 -
+
 {% endif %}
 
 </td>
@@ -230,6 +363,18 @@ No Report
 
 </td>
 
+<td>
+
+<a href="/delete_task/{{ t.id }}">
+
+<button class="delete-btn">
+🗑 Delete
+</button>
+
+</a>
+
+</td>
+
 </tr>
 
 {% endfor %}
@@ -238,25 +383,47 @@ No Report
 
 </div>
 
+{% else %}
+
+<div class="alert">
+
+No tasks found.
+
+</div>
+
 {% endif %}
 
-<!-- ========================================================= -->
-<!-- ============== ELECTRICIAN DASHBOARD ==================== -->
-<!-- ========================================================= -->
+</div>
+
+</div>
+
+{% endif %}
+
+<!-- ================================================= -->
+<!-- ============ ELECTRICIAN DASHBOARD ============== -->
+<!-- ================================================= -->
 
 {% if session.get('role') == 'electrician' %}
 
 <div class="card">
 
-<h2>🧰 My Tasks</h2>
+<div style="width:100%;">
+
+<h2 style="margin-bottom:20px;">
+🧰 My Tasks
+</h2>
 
 {% if tasks %}
 
 {% for t in tasks %}
 
-<div class="card">
+<div class="card" style="margin-bottom:20px;">
 
-<h3>{{ loop.index }}. {{ t.title }}</h3>
+<div style="width:100%;">
+
+<h3>
+{{ loop.index }}. {{ t.title }}
+</h3>
 
 <p>
 
@@ -284,17 +451,6 @@ Status :
 
 </p>
 
-{% if t.created_at %}
-
-<p>
-
-📅 Created :
-{{ t.created_at.strftime('%d-%m-%Y %H:%M') }}
-
-</p>
-
-{% endif %}
-
 <form
 method="POST"
 action="/update/{{ t.id }}"
@@ -303,7 +459,9 @@ enctype="multipart/form-data"
 
 <select name="status" required>
 
-<option value="">Select Status</option>
+<option value="">
+Select Status
+</option>
 
 <option value="Pending">
 Pending
@@ -321,7 +479,10 @@ Completed
 
 <br><br>
 
-<input type="file" name="report">
+<input
+type="file"
+name="report"
+>
 
 <br><br>
 
@@ -342,10 +503,12 @@ href="/static/uploads/{{ t.report }}"
 target="_blank"
 class="report-link"
 >
-📄 View
+📄 View Report
 </a>
 
 {% endif %}
+
+</div>
 
 </div>
 
@@ -353,12 +516,62 @@ class="report-link"
 
 {% else %}
 
-<p>No Tasks Assigned</p>
+<div class="alert">
+
+No Tasks Assigned
+
+</div>
 
 {% endif %}
 
 </div>
 
+</div>
+
 {% endif %}
+
+<!-- ================= GPS SCRIPT ================= -->
+
+<script>
+
+navigator.geolocation.getCurrentPosition(
+
+(position) => {
+
+document.getElementById("locationText").innerHTML =
+
+"Latitude : " +
+
+position.coords.latitude +
+
+"<br>Longitude : " +
+
+position.coords.longitude;
+
+},
+
+(error) => {
+
+document.getElementById("locationText").innerHTML =
+
+"❌ Location Permission Denied";
+
+}
+
+);
+
+</script>
+
+<!-- ================= AUTO REFRESH ================= -->
+
+<script>
+
+setInterval(() => {
+
+location.reload();
+
+}, 10000);
+
+</script>
 
 {% endblock %}

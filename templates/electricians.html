@@ -1,84 +1,133 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>👷 Electrician Management</h1>
+<h1 style="margin-bottom:20px;">
+⚡ Electricians
+</h1>
 
-<div class="table-container">
-
-<table>
-
-<tr>
-<th>#</th>
-<th>Profile</th>
-<th>Username</th>
-<th>Role</th>
-<th>Actions</th>
-</tr>
+<div class="grid">
 
 {% for u in users %}
 
-<tr>
+<div class="card electrician-card">
 
-<td>{{ loop.index }}</td>
+    <!-- PROFILE IMAGE -->
 
-<td>
+    {% if u.profile_pic %}
 
-{% if u.profile_pic %}
+    <img
+        src="data:image/png;base64,{{ u.profile_pic }}"
+        class="electrician-big-img"
+    >
 
-<img
-src="data:image/png;base64,{{ u.profile_pic }}"
-class="table-profile"
->
+    {% else %}
 
-{% else %}
+    <img
+        src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+        class="electrician-big-img"
+    >
 
-<img
-src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-class="table-profile"
->
+    {% endif %}
 
-{% endif %}
+    <!-- USER INFO -->
 
-</td>
+    <div class="electrician-info">
 
-<td>{{ u.username }}</td>
+        <h2>{{ u.username }}</h2>
 
-<td>{{ u.role }}</td>
+        <p>
+            👷 Role :
+            <b>{{ u.role }}</b>
+        </p>
 
-<td>
+        <p>
+            🆔 User ID :
+            {{ u.id }}
+        </p>
 
-<a href="/edit_user/{{ u.id }}">
+        <!-- TOTAL TASKS -->
 
-<button class="edit-btn">
-✏ Edit
-</button>
+        <p>
+            📋 Tasks :
+            {{ u.tasks|length if u.tasks else 0 }}
+        </p>
 
-</a>
+        <!-- REPORTS -->
 
-<a href="/delete_user/{{ u.id }}"
-onclick="return confirm('Delete User?')">
+        <div style="margin-top:15px;">
 
-<button class="delete-btn">
-🗑 Delete
-</button>
+            <h3>📄 Reports</h3>
 
-</a>
+            {% set has_report = false %}
 
-<a href="/pay_electrician/{{ u.id }}">
+            {% for t in u.tasks %}
 
-<button class="salary-btn">
-💰 Pay Salary
-</button>
+                {% if t.report %}
 
-</a>
+                    {% set has_report = true %}
 
-</td>
+                    <a
+                        href="/static/uploads/{{ t.report }}"
+                        target="_blank"
+                        class="report-link"
+                    >
+                        📄 {{ t.title }}
+                    </a>
 
-</tr>
+                    <br><br>
+
+                {% endif %}
+
+            {% endfor %}
+
+            {% if not has_report %}
+                No Reports
+            {% endif %}
+
+        </div>
+
+        <!-- ACTION BUTTONS -->
+
+        <div
+            style="
+                margin-top:20px;
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <a href="/edit_user/{{ u.id }}">
+
+                <button class="edit-btn">
+                    ✏ Edit
+                </button>
+
+            </a>
+
+            <a href="/delete_user/{{ u.id }}">
+
+                <button class="delete-btn">
+                    🗑 Delete
+                </button>
+
+            </a>
+
+            <a href="/pay_electrician/{{ u.id }}">
+
+                <button class="salary-btn">
+                    💳 Pay
+                </button>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endfor %}
-
-</table>
 
 </div>
 

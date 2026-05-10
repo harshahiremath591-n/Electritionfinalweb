@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>📍 GPS Tracking</h1>
+
+<div class="card">
+
+<form method="POST">
+
+<input type="hidden" id="latitude" name="latitude">
+
+<input type="hidden" id="longitude" name="longitude">
+
+<button type="submit">
+📍 Send Location
+</button>
+
+</form>
+
+</div>
+
+<div class="card">
+
+<table>
+
+<tr>
+<th>User</th>
+<th>Latitude</th>
+<th>Longitude</th>
+<th>Time</th>
+</tr>
+
+{% for l in data %}
+
+<tr>
+
+<td>{{ l.user_id }}</td>
+
+<td>{{ l.latitude }}</td>
+
+<td>{{ l.longitude }}</td>
+
+<td>{{ l.updated_at }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+<script>
+
+navigator.geolocation.getCurrentPosition(
+
+(position) => {
+
+document.getElementById("latitude").value =
+position.coords.latitude;
+
+document.getElementById("longitude").value =
+position.coords.longitude;
+
+}
+
+);
+
+</script>
+
+{% endblock %}

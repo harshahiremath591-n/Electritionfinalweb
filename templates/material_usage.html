@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 style="margin-bottom:25px;">
+    📦 Material Usage Tracking
+</h1>
+
+<!-- ================= USE MATERIAL ================= -->
+
+<div class="card">
+
+    <div style="width:100%;">
+
+        <h2 style="margin-bottom:20px;">
+            🛠 Use Material
+        </h2>
+
+        <form method="POST">
+
+            <!-- ELECTRICIAN -->
+
+            <label>👷 Select Electrician</label>
+
+            <select name="electrician_id" required>
+
+                <option value="">
+                    Select Electrician
+                </option>
+
+                {% for e in electricians %}
+
+                <option value="{{ e.id }}">
+                    {{ e.username }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <!-- MATERIAL -->
+
+            <label>📦 Select Material</label>
+
+            <select name="material_id" required>
+
+                <option value="">
+                    Select Material
+                </option>
+
+                {% for m in materials %}
+
+                <option value="{{ m.id }}">
+                    {{ m.name }} (Stock : {{ m.quantity }})
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <!-- QUANTITY -->
+
+            <label>🔢 Quantity Used</label>
+
+            <input
+                type="number"
+                name="used_quantity"
+                placeholder="Enter Quantity"
+                required
+            >
+
+            <button type="submit">
+                ✅ Save Usage
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ================= USAGE HISTORY ================= -->
+
+<div class="card">
+
+    <div style="width:100%;">
+
+        <h2 style="margin-bottom:20px;">
+            📋 Usage History
+        </h2>
+
+        {% if usages %}
+
+        <div class="table-container">
+
+            <table>
+
+                <tr>
+
+                    <th>#</th>
+                    <th>Electrician</th>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                    <th>Date</th>
+
+                </tr>
+
+                {% for u in usages %}
+
+                <tr>
+
+                    <td>{{ loop.index }}</td>
+
+                    <td>
+                        👷 {{ u.electrician.username }}
+                    </td>
+
+                    <td>
+                        📦 {{ u.material.name }}
+                    </td>
+
+                    <td>
+                        {{ u.used_quantity }}
+                    </td>
+
+                    <td>
+                        {{ u.used_at.strftime('%d-%m-%Y %H:%M') }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="alert">
+
+            No Material Usage Found
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

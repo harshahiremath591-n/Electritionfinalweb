@@ -3,29 +3,40 @@
 
 <head>
 
-    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
 
-    <title>⚡ Electrician Management System</title>
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
 
-    <!-- CSS -->
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+<title>⚡ Electrician Management System</title>
 
-    <!-- FONT AWESOME -->
-    <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        rel="stylesheet"
-    >
+<!-- CSS -->
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}"
+>
 
-    <!-- GOOGLE FONT -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+<!-- FONT AWESOME -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+rel="stylesheet"
+>
+
+<!-- GOOGLE FONT -->
+<link
+href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet"
+>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -35,79 +46,105 @@
 
 {% if session.get('user_id') %}
 
-<nav>
+<nav id="navbar">
 
     <!-- LOGO -->
-    <div class="logo">⚡ Electrician System</div>
+    <div class="logo">
+        ⚡ Electrician System
+    </div>
+
+    <!-- MOBILE BUTTON -->
+    <div class="menu-btn" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
 
     <!-- NAV LINKS -->
-<div class="nav-links">
+    <div class="nav-links" id="navLinks">
 
-    <!-- DASHBOARD -->
-    <a href="/dashboard">
-        <i class="fa-solid fa-chart-line"></i>
-        Dashboard
-    </a>
+        <a href="/dashboard">
+            <i class="fa-solid fa-chart-line"></i>
+            Dashboard
+        </a>
 
-    <!-- ADMIN MENU -->
-    {% if session.get('role') == 'admin' %}
+        <!-- ADMIN MENU -->
+        {% if session.get('role') == 'admin' %}
 
-    <a href="/jobs">
-        <i class="fa-solid fa-briefcase"></i>
-        Jobs
-    </a>
+        <a href="/jobs">
+            <i class="fa-solid fa-briefcase"></i>
+            Jobs
+        </a>
 
-    <a href="/materials">
-        <i class="fa-solid fa-box"></i>
-        Materials
-    </a>
+        <a href="/materials">
+            <i class="fa-solid fa-box"></i>
+            Materials
+        </a>
 
-    <a href="/add_task">
-        <i class="fa-solid fa-plus"></i>
-        Add Task
-    </a>
+        <a href="/material_usage">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            Material Usage
+        </a>
 
-    <a href="/electricians">
-        <i class="fa-solid fa-users"></i>
-        Electricians
-    </a>
+        <a href="/add_task">
+            <i class="fa-solid fa-plus"></i>
+            Add Task
+        </a>
 
-    <a href="/transactions">
-        <i class="fa-solid fa-money-bill-wave"></i>
-        Payments
-    </a>
+        <a href="/electricians">
+            <i class="fa-solid fa-users"></i>
+            Electricians
+        </a>
 
-    {% endif %}
+        <a href="/transactions">
+            <i class="fa-solid fa-money-bill-wave"></i>
+            Payments
+        </a>
 
-    <!-- ELECTRICIAN MENU -->
-    {% if session.get('role') == 'electrician' %}
+        {% endif %}
 
-    <a href="/electrician_payments">
-        <i class="fa-solid fa-wallet"></i>
-        Salary
-    </a>
+        <!-- ELECTRICIAN MENU -->
+        {% if session.get('role') == 'electrician' %}
 
-    {% endif %}
+        <a href="/materials">
+            <i class="fa-solid fa-box"></i>
+            Materials
+        </a>
 
-    <!-- COMMON -->
-    <a href="/reports">
-        <i class="fa-solid fa-chart-pie"></i>
-        Reports
-    </a>
+        <a href="/electrician_payments">
+            <i class="fa-solid fa-wallet"></i>
+            Salary
+        </a>
 
-    <a href="/profile">
-        <i class="fa-solid fa-user"></i>
-        Profile
-    </a>
+        {% endif %}
 
-    <a href="/logout">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        Logout
-    </a>
+        <!-- COMMON -->
+        <a href="/reports">
+            <i class="fa-solid fa-chart-pie"></i>
+            Reports
+        </a>
 
-</div>
+        <a href="/profile">
+            <i class="fa-solid fa-user"></i>
+            Profile
+        </a>
 
-    <!-- PROFILE IMAGE -->
+        <!-- THEME BUTTON -->
+        <button
+            class="theme-btn"
+            onclick="toggleTheme()"
+            type="button"
+        >
+            🌙
+        </button>
+
+        <!-- LOGOUT -->
+        <a href="/logout" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </a>
+
+    </div>
+
+    <!-- PROFILE -->
     <div class="profile">
 
         {% if user and user.profile_pic %}
@@ -132,7 +169,13 @@
 
 {% endif %}
 
-<!-- ================= FLASH MESSAGES ================= -->
+<!-- ================= LIVE NOTIFICATION ================= -->
+
+<div id="notification" class="notification">
+    ⚡ Live Updates Enabled
+</div>
+
+<!-- ================= CONTENT ================= -->
 
 <div class="container">
 
@@ -152,12 +195,184 @@
 
     {% endwith %}
 
-    <!-- PAGE CONTENT -->
     {% block content %}
-
     {% endblock %}
 
 </div>
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+/* ================= MOBILE MENU ================= */
+
+function toggleMenu() {
+
+    document
+    .getElementById("navLinks")
+    .classList
+    .toggle("active");
+
+}
+
+/* ================= THEME ================= */
+
+function toggleTheme() {
+
+    document.body.classList.toggle("light-mode");
+
+    if(document.body.classList.contains("light-mode")) {
+
+        localStorage.setItem("theme", "light");
+
+    } else {
+
+        localStorage.setItem("theme", "dark");
+
+    }
+
+}
+
+/* LOAD SAVED THEME */
+
+window.onload = function() {
+
+    const savedTheme = localStorage.getItem("theme");
+
+    if(savedTheme === "light") {
+
+        document.body.classList.add("light-mode");
+
+    }
+
+};
+
+/* ================= AUTO HIDE NAVBAR ================= */
+
+let lastScrollTop = 0;
+
+window.addEventListener("scroll", function () {
+
+    let navbar = document.getElementById("navbar");
+
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if(scrollTop > lastScrollTop) {
+
+        navbar.style.top = "-120px";
+
+    } else {
+
+        navbar.style.top = "0";
+
+    }
+
+    lastScrollTop = scrollTop;
+
+});
+
+/* ================= AUTO LOGOUT ================= */
+
+let logoutTimer;
+
+function resetTimer() {
+
+    clearTimeout(logoutTimer);
+
+    logoutTimer = setTimeout(() => {
+
+        window.location.href = "/logout";
+
+    }, 600000);
+
+}
+
+window.onload = resetTimer;
+
+document.onmousemove = resetTimer;
+document.onkeypress = resetTimer;
+document.onclick = resetTimer;
+document.onscroll = resetTimer;
+
+/* ================= LIVE NOTIFICATION ================= */
+
+setInterval(() => {
+
+    const notification = document.getElementById("notification");
+
+    notification.classList.add("show");
+
+    setTimeout(() => {
+
+        notification.classList.remove("show");
+
+    }, 3000);
+
+}, 15000);
+
+</script>
+
+<script>
+
+navigator.geolocation.getCurrentPosition(
+
+(position) => {
+
+    console.log(
+        "Latitude:",
+        position.coords.latitude
+    );
+
+    console.log(
+        "Longitude:",
+        position.coords.longitude
+    );
+
+},
+
+(error) => {
+
+    console.log(
+        "Location Permission Denied"
+    );
+
+}
+
+);
+
+</script>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<script>
+
+const socket = io();
+
+socket.on('connect', () => {
+
+console.log("Connected");
+
+});
+
+</script>
+
+<script>
+
+new Chart(document.getElementById('chart'), {
+
+type:'bar',
+
+data:{
+labels:['Completed','Pending'],
+datasets:[{
+label:'Tasks',
+data:[10,5]
+}]
+}
+
+});
+
+</script>
 
 </body>
 </html>

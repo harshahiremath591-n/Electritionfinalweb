@@ -1,59 +1,226 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h2>🧱 Materials Management</h2>
+<h1 style="margin-bottom:25px;">
+    📦 Materials Management
+</h1>
 
-<!-- ================= ADD MATERIAL ================= -->
-<div class="card">
-    <h3>➕ Add New Material</h3>
+<!-- ================= TOP STATS ================= -->
 
-    <form method="POST">
+<div class="grid">
 
-        <input name="name" placeholder="Material Name" required>
+    <div class="card stat-card">
 
-        <input name="quantity" type="number" placeholder="Quantity" required>
+        <h3>📦 Total Materials</h3>
 
-        <input name="cost" type="number" step="0.01" placeholder="Cost per Unit" required>
+        <h1>
+            {{ materials|length }}
+        </h1>
 
-        <button type="submit">Add Material</button>
+    </div>
 
-    </form>
-</div>
+    <div class="card stat-card">
 
-<!-- ================= MATERIAL LIST ================= -->
-<div class="card">
-    <h3>📦 Material Inventory</h3>
-
-    {% if materials and materials|length > 0 %}
-
+        <h3>⚠️ Low Stock</h3>
+    
+        {% set ns = namespace(count=0) %}
+    
         {% for m in materials %}
-            <div class="card">
-
-                <b>📌 {{ m.name }}</b>
-                <br>
-
-                📦 Stock: 
-                <b style="color: {% if m.quantity < 5 %}red{% else %}white{% endif %}">
-                    {{ m.quantity }}
-                </b>
-
-                <br>
-
-                💰 Cost per Unit: ₹{{ m.cost_per_unit if m.cost_per_unit else m.cost }}
-
-                <!-- LOW STOCK ALERT -->
-                {% if m.quantity < 5 %}
-                    <br>
-                    <span style="color:red;">⚠️ Low Stock Alert</span>
-                {% endif %}
-
-            </div>
+    
+            {% if m.quantity < 5 %}
+    
+                {% set ns.count = ns.count + 1 %}
+    
+            {% endif %}
+    
         {% endfor %}
-
-    {% else %}
-        <p>No materials added yet.</p>
-    {% endif %}
+    
+        <h1>
+            {{ ns.count }}
+        </h1>
+    
+    </div>
 
 </div>
+
+<!-- ================= ADMIN ADD MATERIAL ================= -->
+
+{% if session.get('role') == 'admin' %}
+
+<div class="card material-card">
+
+    <div style="width:100%;">
+
+        <h2 style="margin-bottom:20px;">
+            ➕ Add New Material
+        </h2>
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Material Name"
+                required
+            >
+
+            <input
+                type="number"
+                name="quantity"
+                placeholder="Quantity"
+                required
+            >
+
+            <input
+                type="number"
+                step="0.01"
+                name="cost"
+                placeholder="Cost per Unit"
+                required
+            >
+
+            <button type="submit">
+                ✅ Add Material
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+<!-- ================= MATERIAL INVENTORY ================= -->
+
+<div class="card material-card">
+
+    <div style="width:100%;">
+
+        <h2 style="margin-bottom:20px;">
+            📋 Material Inventory
+        </h2>
+
+        {% if materials and materials|length > 0 %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>Material</th>
+                        <th>Quantity</th>
+                        <th>Cost</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for m in materials %}
+
+                    <tr>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+                        <td>
+                            📌 {{ m.name }}
+                        </td>
+
+                        <td>
+
+                            {% if m.quantity < 5 %}
+
+                                <span style="color:red; font-weight:bold;">
+                                    {{ m.quantity }}
+                                </span>
+
+                            {% else %}
+
+                                <span style="color:lime; font-weight:bold;">
+                                    {{ m.quantity }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            ₹ {{ m.cost }}
+
+                        </td>
+
+                        <td>
+
+                            {% if m.quantity < 5 %}
+
+                                <span style="color:red; font-weight:bold;">
+                                    ⚠️ Low Stock
+                                </span>
+
+                            {% else %}
+
+                                <span style="color:#22c55e; font-weight:bold;">
+                                    ✅ Available
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="alert">
+
+            No materials added yet.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- ================= LIVE AUTO REFRESH ================= -->
+
+<script>
+
+setInterval(() => {
+
+    window.location.reload();
+
+}, 15000);
+
+</script>
+
+<script>
+
+setInterval(() => {
+
+    location.reload();
+
+}, 10000);
+
+</script>
 
 {% endblock %}

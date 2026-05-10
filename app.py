@@ -1,18 +1,29 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for
+from flask import Flask, render_template, request, redirect, session, flash, send_file
 from config import Config
-from models import db, User, Task, Job, Material, Payment
+from models import db, User, Task, Job, Material, Payment, MaterialUsage, Attendance, Location
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, timezone
+from functools import wraps
+from flask_socketio import SocketIO
+from fpdf import FPDF
 
 import os
 import base64
 import razorpay
+import shutil
 
 app = Flask(__name__)
+
 app.secret_key = "harsha_secret"
+
 app.config.from_object(Config)
 
+app.permanent_session_lifetime = timedelta(minutes=10)
+
+socketio = SocketIO(app)
+
 # ================= RAZORPAY =================
+
 client = razorpay.Client(
     auth=(
         app.config['RAZORPAY_KEY_ID'],
@@ -20,48 +31,76 @@ client = razorpay.Client(
     )
 )
 
+# ================= DATABASE =================
+
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    
 
+# ================= LOGIN REQUIRED =================
+
+def login_required(f):
+
+    @wraps(f)
+
+    def wrapper(*args, **kwargs):
+
+        if not session.get('user_id'):
+            return redirect('/login')
+
+        return f(*args, **kwargs)
+
+    return wrapper
 
 # ================= HOME =================
+
 @app.route('/')
 def home():
+
     return render_template('home.html')
 
 # ================= LOGIN =================
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
     if request.method == 'POST':
 
+        username = request.form.get('username')
+
+        password = request.form.get('password')
+
         user = User.query.filter_by(
-            username=request.form.get('username')
+            username=username
         ).first()
 
         if user and check_password_hash(
             user.password,
-            request.form.get('password')
+            password
         ):
+
+            session.clear()
+
+            session.permanent = True
 
             session['user_id'] = user.id
             session['role'] = user.role
             session['username'] = user.username
 
+            flash("✅ Login Successful")
+
             return redirect('/dashboard')
 
-        flash("Invalid Login")
+        flash("❌ Invalid Login")
 
     return render_template('login.html')
 
 # ================= REGISTER =================
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
-    # Already logged in
     if session.get('user_id'):
         return redirect('/dashboard')
 
@@ -79,65 +118,56 @@ def register():
 
             if not username or not password or not role:
 
-                flash("⚠️ All fields are required")
+                flash("⚠️ All fields required")
 
                 return redirect('/register')
 
-            # Username length
             if len(username) < 3:
 
                 flash("⚠️ Username too short")
 
                 return redirect('/register')
 
-            # Password length
             if len(password) < 4:
 
-                flash("⚠️ Password must be minimum 4 characters")
+                flash("⚠️ Password minimum 4 characters")
 
                 return redirect('/register')
 
-            # Role validation
             if role not in ['admin', 'electrician']:
 
-                flash("⚠️ Invalid role selected")
+                flash("⚠️ Invalid role")
 
                 return redirect('/register')
 
-            # ================= DUPLICATE USER =================
-
-            existing_user = User.query.filter_by(
+            existing = User.query.filter_by(
                 username=username
             ).first()
 
-            if existing_user:
+            if existing:
 
                 flash("⚠️ Username already exists")
 
                 return redirect('/register')
 
-            # ================= PROFILE IMAGE =================
-
-            file = request.files.get('profile_pic')
+            # ================= IMAGE =================
 
             image_data = None
 
+            file = request.files.get('profile_pic')
+
             if file and file.filename:
 
-                allowed_extensions = [
-                    '.png',
-                    '.jpg',
-                    '.jpeg'
-                ]
+                allowed = ['.png', '.jpg', '.jpeg']
 
                 filename = file.filename.lower()
 
                 if not any(
                     filename.endswith(ext)
-                    for ext in allowed_extensions
+                    for ext in allowed
                 ):
 
-                    flash("⚠️ Only PNG/JPG images allowed")
+                    flash("⚠️ Only PNG/JPG allowed")
 
                     return redirect('/register')
 
@@ -156,14 +186,13 @@ def register():
                 role=role,
 
                 profile_pic=image_data
-
             )
 
             db.session.add(user)
 
             db.session.commit()
 
-            flash("✅ Registered Successfully")
+            flash("✅ Registration Successful")
 
             return redirect('/login')
 
@@ -179,55 +208,174 @@ def register():
 
     return render_template('register.html')
 
-# ================= DASHBOARD =================
-@app.route('/dashboard')
-def dashboard():
+# ================= ATTENDANCE =================
 
-    if not session.get('user_id'):
-        return redirect('/login')
+from datetime import datetime
 
-    if session['role'] == 'electrician':
-        tasks = Task.query.filter_by(
-            assigned_to=session['user_id']
-        ).all()
-    else:
-        tasks = Task.query.all()
+@app.route('/attendance')
+@login_required
+def attendance():
 
-    completed = Task.query.filter_by(status="Completed").count()
-    pending = Task.query.filter_by(status="Pending").count()
-    processing = Task.query.filter_by(status="Processing").count()
+    data = Attendance.query.order_by(
+        Attendance.id.desc()
+    ).all()
 
     return render_template(
+        'attendance.html',
+        data=data
+    )
+
+
+# ================= CHECK IN =================
+
+@app.route('/checkin')
+@login_required
+def checkin():
+
+    attend = Attendance(
+
+        user_id=session['user_id'],
+
+        checkin=datetime.now()
+
+    )
+
+    db.session.add(attend)
+
+    db.session.commit()
+
+    flash("✅ Checked In")
+
+    return redirect('/attendance')
+
+
+# ================= CHECK OUT =================
+
+@app.route('/checkout/<int:id>')
+@login_required
+def checkout(id):
+
+    attend = Attendance.query.get(id)
+
+    attend.checkout = datetime.now()
+
+    total = attend.checkout - attend.checkin
+
+    attend.working_hours = str(total)
+
+    db.session.commit()
+
+    flash("✅ Checked Out")
+
+    return redirect('/attendance')
+
+# ================= DASHBOARD =================
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+
+    filter_type = request.args.get('filter', 'daily')
+
+    now = datetime.now(timezone.utc)
+
+    # ================= FILTER =================
+
+    if filter_type == 'daily':
+
+        start_date = now - timedelta(days=1)
+
+    elif filter_type == 'weekly':
+
+        start_date = now - timedelta(days=7)
+
+    else:
+
+        start_date = now - timedelta(days=30)
+
+    # ================= TASKS =================
+
+    if session.get('role') == 'electrician':
+
+        tasks = Task.query.filter_by(
+            assigned_to=session.get('user_id')
+        ).all()
+
+    else:
+
+        tasks = Task.query.all()
+
+    # ================= COUNTS =================
+
+    completed = Task.query.filter(
+        Task.status == "Completed"
+    ).count()
+
+    pending = Task.query.filter(
+        Task.status == "Pending"
+    ).count()
+
+    processing = Task.query.filter(
+        Task.status == "Processing"
+    ).count()
+
+    total_users = User.query.filter_by(
+        role='electrician'
+    ).count()
+
+    return render_template(
+
         'dashboard.html',
+
         tasks=tasks,
+
         completed=completed,
+
         pending=pending,
-        processing=processing
+
+        processing=processing,
+
+        total_users=total_users,
+
+        filter_type=filter_type
     )
 
 # ================= JOBS =================
+
 @app.route('/jobs', methods=['GET', 'POST'])
+@login_required
 def jobs():
 
     if request.method == 'POST':
 
         job = Job(
+
             title=request.form.get('title'),
+
             location=request.form.get('location')
         )
 
         db.session.add(job)
+
         db.session.commit()
+
+        flash("✅ Job Added")
 
     jobs = Job.query.all()
 
-    return render_template('jobs.html', jobs=jobs)
+    return render_template(
+        'jobs.html',
+        jobs=jobs
+    )
 
 # ================= EDIT JOB =================
+
 @app.route('/edit_job/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_job(id):
 
     if session.get('role') != 'admin':
+
         return redirect('/dashboard')
 
     job = db.session.get(Job, id)
@@ -240,7 +388,7 @@ def edit_job(id):
 
         db.session.commit()
 
-        flash("Job Updated")
+        flash("✅ Job Updated")
 
         return redirect('/jobs')
 
@@ -250,26 +398,38 @@ def edit_job(id):
     )
 
 # ================= MATERIALS =================
+
 @app.route('/materials', methods=['GET', 'POST'])
+@login_required
 def materials():
 
-    if not session.get('user_id'):
-        return redirect('/login')
+    # ================= ADD MATERIAL =================
 
     if request.method == 'POST':
+
+        if session.get('role') != 'admin':
+
+            flash("Only Admin Can Add Materials")
+
+            return redirect('/materials')
 
         try:
 
             material = Material(
+
                 name=request.form.get('name'),
+
                 quantity=int(request.form.get('quantity')),
+
                 cost=float(request.form.get('cost'))
+
             )
 
             db.session.add(material)
+
             db.session.commit()
 
-            flash("Material Added")
+            flash("✅ Material Added Successfully")
 
         except Exception as e:
 
@@ -277,17 +437,40 @@ def materials():
 
             print("MATERIAL ERROR:", e)
 
-            flash("Material Error")
+            flash("❌ Material Add Failed")
 
-    materials = Material.query.all()
+    # ================= GET MATERIALS =================
+
+    materials = Material.query.order_by(
+        Material.id.desc()
+    ).all()
+
+    total_materials = len(materials)
+
+    total_cost = sum(m.cost for m in materials)
+
+    low_stock = Material.query.filter(
+        Material.quantity < 5
+    ).count()
 
     return render_template(
+
         'materials.html',
-        materials=materials
+
+        materials=materials,
+
+        total_materials=total_materials,
+
+        total_cost=total_cost,
+
+        low_stock=low_stock
+
     )
 
 # ================= ELECTRICIANS =================
+
 @app.route('/electricians')
+@login_required
 def electricians():
 
     users = User.query.filter_by(
@@ -300,27 +483,75 @@ def electricians():
     )
 
 # ================= REPORTS =================
+
 @app.route('/reports')
+@login_required
 def reports():
+
+    tasks = Task.query.order_by(
+        Task.id.desc()
+    ).all()
+
+    return render_template(
+        'reports.html',
+        tasks=tasks,
+        filter_type="All"
+    )
+
+
+# ================= DAILY =================
+
+@app.route('/daily')
+@login_required
+def daily():
 
     tasks = Task.query.all()
 
     return render_template(
         'reports.html',
-        tasks=tasks
+        tasks=tasks,
+        filter_type="Daily"
+    )
+
+
+# ================= WEEKLY =================
+
+@app.route('/weekly')
+@login_required
+def weekly():
+
+    tasks = Task.query.all()
+
+    return render_template(
+        'reports.html',
+        tasks=tasks,
+        filter_type="Weekly"
+    )
+
+
+# ================= MONTHLY =================
+
+@app.route('/monthly')
+@login_required
+def monthly():
+
+    tasks = Task.query.all()
+
+    return render_template(
+        'reports.html',
+        tasks=tasks,
+        filter_type="Monthly"
     )
 
 # ================= PROFILE =================
 
 @app.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
-
-    if not session.get('user_id'):
-        return redirect('/login')
 
     user = db.session.get(
         User,
-        session['user_id']
+        session.get('user_id')
     )
 
     if request.method == 'POST':
@@ -330,6 +561,7 @@ def profile():
         password = request.form.get('password')
 
         if password:
+
             user.password = generate_password_hash(password)
 
         file = request.files.get('profile_pic')
@@ -356,34 +588,35 @@ def profile():
 # ================= EDIT USER =================
 
 @app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def edit_user(user_id):
 
-    if not session.get('user_id'):
-        return redirect('/login')
-
-    # ONLY ADMIN
     if session.get('role') != 'admin':
+
         flash("Access Denied")
+
         return redirect('/dashboard')
 
     user = db.session.get(User, user_id)
 
     if not user:
+
         flash("User Not Found")
+
         return redirect('/electricians')
 
     if request.method == 'POST':
 
         user.username = request.form.get('username')
+
         user.role = request.form.get('role')
 
-        # PASSWORD UPDATE
         password = request.form.get('password')
 
         if password:
+
             user.password = generate_password_hash(password)
 
-        # PROFILE IMAGE
         file = request.files.get('profile_pic')
 
         if file and file.filename:
@@ -394,7 +627,7 @@ def edit_user(user_id):
 
         db.session.commit()
 
-        flash("✅ User Updated Successfully")
+        flash("✅ User Updated")
 
         return redirect('/electricians')
 
@@ -403,28 +636,28 @@ def edit_user(user_id):
         edit_user=user
     )
 
-
 # ================= DELETE USER =================
 
 @app.route('/delete_user/<int:user_id>')
+@login_required
 def delete_user(user_id):
 
-    if not session.get('user_id'):
-        return redirect('/login')
-
     if session.get('role') != 'admin':
-        flash("Access Denied")
+
         return redirect('/dashboard')
 
     user = db.session.get(User, user_id)
 
     if not user:
+
         flash("User Not Found")
+
         return redirect('/electricians')
 
-    # PREVENT ADMIN DELETE SELF
     if user.id == session.get('user_id'):
-        flash("You Cannot Delete Yourself")
+
+        flash("⚠️ Cannot delete yourself")
+
         return redirect('/electricians')
 
     try:
@@ -433,7 +666,7 @@ def delete_user(user_id):
 
         db.session.commit()
 
-        flash("✅ User Deleted Successfully")
+        flash("✅ User Deleted")
 
     except Exception as e:
 
@@ -441,13 +674,14 @@ def delete_user(user_id):
 
         print(e)
 
-        flash("Delete Failed")
+        flash("❌ Delete Failed")
 
     return redirect('/electricians')
 
-
 # ================= ADD TASK =================
+
 @app.route('/add_task', methods=['GET', 'POST'])
+@login_required
 def add_task():
 
     electricians = User.query.filter_by(
@@ -459,60 +693,75 @@ def add_task():
     if request.method == 'POST':
 
         task = Task(
+
             title=request.form.get('title'),
+
             assigned_to=request.form.get('user_id'),
+
             job_id=request.form.get('job_id'),
+
             status="Pending"
         )
 
         db.session.add(task)
+
         db.session.commit()
 
-        flash("Task Assigned")
+        flash("✅ Task Assigned")
 
         return redirect('/dashboard')
 
     return render_template(
+
         'add_task.html',
+
         electricians=electricians,
+
         jobs=jobs
     )
 
 # ================= UPDATE TASK =================
-@app.route('/update/<int:id>', methods=['POST'])
-def update(id):
 
-    if not session.get('user_id'):
-        return redirect('/login')
+@app.route('/update/<int:id>', methods=['POST'])
+@login_required
+def update(id):
 
     task = db.session.get(Task, id)
 
     if not task:
-        flash("Task not found")
+
+        flash("Task Not Found")
+
         return redirect('/dashboard')
 
-    # Only electrician can update
     if session.get('role') != 'electrician':
+
         return redirect('/dashboard')
 
-    # Only assigned electrician
     if task.assigned_to != session.get('user_id'):
+
         flash("Unauthorized")
+
         return redirect('/dashboard')
 
     try:
 
         status = request.form.get('status')
 
-        # ✅ UPDATE STATUS
-        if status in ["Pending", "Processing", "Completed"]:
+        if status in [
+            "Pending",
+            "Processing",
+            "Completed"
+        ]:
 
             task.status = status
 
             if status == "Completed":
-                task.completed_at = datetime.now(timezone.utc)
 
-        # ✅ REPORT UPLOAD
+                task.completed_at = datetime.now(
+                    timezone.utc
+                )
+
         file = request.files.get('report')
 
         if file and file.filename:
@@ -530,23 +779,26 @@ def update(id):
 
         db.session.commit()
 
-        flash("Task Updated Successfully")
+        flash("✅ Task Updated")
 
     except Exception as e:
 
         db.session.rollback()
 
-        print("UPDATE ERROR:", e)
+        print(e)
 
-        flash("Task Update Failed")
+        flash("❌ Update Failed")
 
     return redirect('/dashboard')
 
 # ================= DELETE TASK =================
+
 @app.route('/delete_task/<int:id>')
+@login_required
 def delete_task(id):
 
     if session.get('role') != 'admin':
+
         return redirect('/dashboard')
 
     task = db.session.get(Task, id)
@@ -557,49 +809,55 @@ def delete_task(id):
 
         db.session.commit()
 
-        flash("Task Deleted")
+        flash("✅ Task Deleted")
 
     return redirect('/dashboard')
-
 
 # ================= PAYMENTS =================
 
 @app.route('/payments', methods=['GET', 'POST'])
+@login_required
 def payments():
-
-    if not session.get('user_id'):
-        return redirect('/login')
 
     if request.method == 'POST':
 
-        amount = int(request.form.get('amount'))
+        amount = int(
+            request.form.get('amount')
+        )
+
         client_name = request.form.get('client_name')
 
         try:
 
-            order_amount = amount * 100
-
             order = client.order.create({
-                "amount": order_amount,
+
+                "amount": amount * 100,
+
                 "currency": "INR",
+
                 "payment_capture": "1"
             })
 
             session['payment_amount'] = amount
+
             session['client_name'] = client_name
 
             return render_template(
+
                 'payment_gateway.html',
+
                 order=order,
+
                 key=app.config['RAZORPAY_KEY_ID'],
+
                 amount=amount
             )
 
         except Exception as e:
 
-            print("PAYMENT ERROR:", e)
+            print(e)
 
-            flash("Payment Gateway Error")
+            flash("❌ Payment Gateway Error")
 
             return redirect('/dashboard')
 
@@ -608,6 +866,7 @@ def payments():
 # ================= PAYMENT SUCCESS =================
 
 @app.route('/payment_success')
+@login_required
 def payment_success():
 
     try:
@@ -635,25 +894,27 @@ def payment_success():
 
         db.session.rollback()
 
-        print("PAYMENT ERROR:", e)
+        print(e)
 
-        flash("Payment Failed")
+        flash("❌ Payment Failed")
 
     return redirect('/transactions')
 
 # ================= PAY ELECTRICIAN =================
 
 @app.route('/pay_electrician/<int:user_id>')
+@login_required
 def pay_electrician(user_id):
 
     if session.get('role') != 'admin':
+
         return redirect('/dashboard')
 
     electrician = db.session.get(User, user_id)
 
     if not electrician:
 
-        flash("Electrician not found")
+        flash("Electrician Not Found")
 
         return redirect('/electricians')
 
@@ -674,32 +935,29 @@ def pay_electrician(user_id):
             transaction_id=f"TXN{datetime.now().timestamp()}",
 
             status="Success"
-
         )
 
         db.session.add(payment)
 
         db.session.commit()
 
-        flash(f"₹2000 paid to {electrician.username}")
+        flash(f"₹2000 Paid to {electrician.username}")
 
     except Exception as e:
 
         db.session.rollback()
 
-        print("PAY ERROR:", e)
+        print(e)
 
-        flash("Payment Failed")
+        flash("❌ Payment Failed")
 
     return redirect('/electricians')
 
-
 # ================= TRANSACTIONS =================
-@app.route('/transactions')
-def transactions():
 
-    if not session.get('user_id'):
-        return redirect('/login')
+@app.route('/transactions')
+@login_required
+def transactions():
 
     try:
 
@@ -714,22 +972,20 @@ def transactions():
 
     except Exception as e:
 
-        print("TRANSACTION ERROR:", e)
+        print(e)
 
-        flash("Transaction Error")
+        flash("❌ Transaction Error")
 
         return redirect('/dashboard')
-    
-    
-    # ================= ELECTRICIAN PAYMENT HISTORY =================
+
+# ================= ELECTRICIAN PAYMENTS =================
 
 @app.route('/electrician_payments')
+@login_required
 def electrician_payments():
 
-    if not session.get('user_id'):
-        return redirect('/login')
-
     if session.get('role') != 'electrician':
+
         return redirect('/dashboard')
 
     try:
@@ -740,23 +996,28 @@ def electrician_payments():
             Payment.id.desc()
         ).all()
 
-        total = sum(p.amount for p in payments)
+        total = sum(
+            p.amount for p in payments
+        )
 
         return render_template(
+
             'electrician_payments.html',
+
             payments=payments,
+
             total=total
         )
 
     except Exception as e:
 
-        print("ELECTRICIAN PAYMENT ERROR:", e)
+        print(e)
 
-        flash("Payment history error")
+        flash("❌ Payment History Error")
 
         return redirect('/dashboard')
-    
-        #=====--====
+
+# ================= USER CONTEXT =================
 
 @app.context_processor
 def inject_user():
@@ -765,58 +1026,232 @@ def inject_user():
 
         user = db.session.get(
             User,
-            session['user_id']
+            session.get('user_id')
         )
 
         return dict(user=user)
 
     return dict(user=None)
 
+# ================= BACKUP =================
 
 @app.route('/backup')
+@login_required
 def backup():
 
     if session.get('role') != 'admin':
+
         return redirect('/dashboard')
 
-    import shutil
-
     shutil.copy(
+
         'instance/electrician.db',
+
         'backup_electrician.db'
     )
 
-    flash("Backup Created")
+    flash("✅ Backup Created")
 
     return redirect('/dashboard')
 
-#====global error handler=====
+# ================= ERROR HANDLERS =================
+
 @app.errorhandler(404)
 def not_found(e):
 
     return render_template(
-        'error.html',
-        msg="404 Page Not Found"
-    ),404
 
+        'error.html',
+
+        msg="404 Page Not Found"
+    ), 404
 
 @app.errorhandler(500)
 def server_error(e):
 
     return render_template(
-        'error.html',
-        msg="500 Internal Server Error"
-    ),500
 
+        'error.html',
+
+        msg="500 Internal Server Error"
+    ), 500
+    
+    
+
+    
+    #=====location======
+@app.route('/location', methods=['GET', 'POST'])
+@login_required
+def location():
+
+    if request.method == 'POST':
+
+        lat = request.form.get('latitude')
+
+        lon = request.form.get('longitude')
+
+        loc = Location(
+
+            user_id=session['user_id'],
+
+            latitude=lat,
+
+            longitude=lon,
+
+            updated_at=datetime.now()
+
+        )
+
+        db.session.add(loc)
+
+        db.session.commit()
+
+        flash("📍 Location Updated")
+
+    data = Location.query.order_by(
+        Location.id.desc()
+    ).all()
+
+    return render_template(
+        'location.html',
+        data=data
+    )
+    
+    #====pdf======
+@app.route('/invoice/<int:id>')
+@login_required
+def invoice(id):
+
+    job = db.session.get(Job, id)
+
+    if not job:
+
+        flash("Invoice Not Found")
+
+        return redirect('/jobs')
+
+    pdf = FPDF()
+
+    pdf.add_page()
+
+    pdf.set_font("Arial", size=18)
+
+    pdf.cell(200, 10, txt="Electrician Invoice", ln=True)
+
+    pdf.ln(10)
+
+    pdf.set_font("Arial", size=14)
+
+    pdf.cell(200, 10, txt=f"Job : {job.title}", ln=True)
+
+    pdf.cell(200, 10, txt=f"Location : {job.location}", ln=True)
+
+    pdf.cell(200, 10, txt=f"Generated : {datetime.now()}", ln=True)
+
+    file_name = f"invoice_{id}.pdf"
+
+    pdf.output(file_name)
+
+    return send_file(file_name, as_attachment=True)
+
+# ================= MATERIAL USAGE =================
+
+@app.route('/material_usage', methods=['GET', 'POST'])
+@login_required
+def material_usage():
+
+    if session.get('role') != 'admin':
+
+        flash("Only Admin Allowed")
+
+        return redirect('/dashboard')
+
+    electricians = User.query.filter_by(
+        role='electrician'
+    ).all()
+
+    materials = Material.query.all()
+
+    if request.method == 'POST':
+
+        electrician_id = request.form.get(
+            'electrician_id'
+        )
+
+        material_id = request.form.get(
+            'material_id'
+        )
+
+        used_quantity = int(
+            request.form.get('used_quantity')
+        )
+
+        material = db.session.get(
+            Material,
+            material_id
+        )
+
+        # CHECK STOCK
+
+        if used_quantity > material.quantity:
+
+            flash("❌ Not Enough Stock")
+
+            return redirect('/material_usage')
+
+        # SAVE USAGE
+
+        usage = MaterialUsage(
+
+            electrician_id=electrician_id,
+
+            material_id=material_id,
+
+            used_quantity=used_quantity
+
+        )
+
+        # AUTO REDUCE STOCK
+
+        material.quantity -= used_quantity
+
+        db.session.add(usage)
+
+        db.session.commit()
+
+        flash("✅ Material Usage Saved")
+
+        return redirect('/material_usage')
+
+    usages = MaterialUsage.query.order_by(
+        MaterialUsage.id.desc()
+    ).all()
+
+    return render_template(
+
+        'material_usage.html',
+
+        electricians=electricians,
+
+        materials=materials,
+
+        usages=usages
+
+    )
+    
 
 # ================= LOGOUT =================
+
 @app.route('/logout')
 def logout():
 
     session.clear()
 
+    flash("✅ Logged Out")
+
     return redirect('/login')
 
 # ================= RUN =================
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)

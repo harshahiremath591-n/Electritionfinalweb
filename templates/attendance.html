@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>👷 Attendance System</h1>
+
+<div class="card">
+
+<a href="/checkin">
+<button>✅ Check In</button>
+</a>
+
+</div>
+
+<div class="card">
+
+<table>
+
+<tr>
+<th>User ID</th>
+<th>Check In</th>
+<th>Check Out</th>
+<th>Hours</th>
+<th>Action</th>
+</tr>
+
+{% for a in data %}
+
+<tr>
+
+<td>{{ a.user_id }}</td>
+
+<td>{{ a.checkin }}</td>
+
+<td>{{ a.checkout or "-" }}</td>
+
+<td>{{ a.working_hours or "-" }}</td>
+
+<td>
+
+{% if not a.checkout %}
+
+<a href="/checkout/{{ a.id }}">
+<button>Check Out</button>
+</a>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+{% endblock %}

@@ -1,2 +1,6 @@
 <h2>{{msg}}</h2>
-<a href="/">Go Back</a>
+<a href="/dashboard" class="btn">⬅ Go Back</a>
+
+{% if session.get('role') == 'admin' %}
+<div class="card">
+    

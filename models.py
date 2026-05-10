@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
 db = SQLAlchemy()
 
 # ================= USERS =================
@@ -19,6 +20,8 @@ class User(db.Model):
     role = db.Column(db.String(20))
 
     profile_pic = db.Column(db.Text)
+    
+    tasks = db.relationship('Task', backref='electrician', lazy=True)
 
 # ================= JOBS =================
 class Job(db.Model):
@@ -116,4 +119,45 @@ created_at = db.Column(
     default=datetime.utcnow
 )
     
+    #====attendance details====
     
+class Attendance(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer)
+
+    checkin = db.Column(db.DateTime)
+
+    checkout = db.Column(db.DateTime)
+
+    working_hours = db.Column(db.String(50))
+    
+    
+    #====Material Usage Tracking====
+    
+class MaterialUsage(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    task_id = db.Column(db.Integer)
+
+    material_id = db.Column(db.Integer)
+
+    quantity_used = db.Column(db.Integer)
+    
+    
+    
+    #====Location Tracking====
+    
+class Location(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer)
+
+    latitude = db.Column(db.String(100))
+
+    longitude = db.Column(db.String(100))
+
+    updated_at = db.Column(db.DateTime)

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card">
+
+    <div style="width:100%;">
+
+        <h1>🧾 Invoice</h1>
+
+        <hr><br>
+
+        <h2>Job Title:
+            {{ job.title }}
+        </h2>
+
+        <h3>Location:
+            {{ job.location }}
+        </h3>
+
+        <br>
+
+        <button onclick="window.print()">
+            🖨️ Print Invoice
+        </button>
+
+    </div>
+
+</div>
+
+{% endblock %}
