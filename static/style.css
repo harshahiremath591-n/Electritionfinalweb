@@ -375,15 +375,172 @@ table td{
 
 /* ================= MOBILE ================= */
 
-@media(max-width:600px){
+/* ================= AUTO RESPONSIVE ================= */
+
+html{
+    font-size:100%;
+}
+
+img{
+    max-width:100%;
+    height:auto;
+}
+
+.card{
+    width:min(1100px,95%);
+}
+
+.left h1{
+    font-size:clamp(32px,5vw,58px);
+}
+
+.left p{
+    font-size:clamp(14px,2vw,18px);
+}
+
+.circle{
+    width:min(320px,75vw);
+    height:min(320px,75vw);
+}
+
+.buttons{
+    flex-wrap:wrap;
+}
+
+.btn{
+    width:auto;
+}
+
+@media(max-width:1024px){
 
     .card{
+
         flex-direction:column;
-        padding:30px;
+
+        gap:40px;
+
+        padding:40px 25px;
+
+        text-align:center;
+
     }
 
-    .payment-page{
+    .left,
+    .right{
+
+        width:100%;
+
+    }
+
+    .features{
+
+        justify-content:center;
+
+        flex-wrap:wrap;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    body{
+        overflow-y:auto;
+        overflow-x:hidden;
+    }
+
+    nav{
+
+        flex-direction:column;
+
+        gap:15px;
+
         padding:20px;
+
+    }
+
+    .nav-links{
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+
+        gap:10px;
+
+    }
+
+    .nav-links a{
+
+        margin-left:0;
+
+    }
+
+    .hero{
+
+        padding:20px;
+
+        height:auto;
+
+        min-height:100vh;
+
+    }
+
+    .card{
+
+        padding:30px 20px;
+
+        border-radius:20px;
+
+    }
+
+    .buttons{
+
+        flex-direction:column;
+
+        width:100%;
+
+    }
+
+    .btn{
+
+        width:100%;
+
+    }
+
+    .features{
+
+        flex-direction:column;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .left h1{
+
+        font-size:30px;
+
+    }
+
+    .tag{
+
+        font-size:12px;
+
+    }
+
+    .left p{
+
+        font-size:14px;
+
+        line-height:1.6;
+
+    }
+
+    .feature{
+
+        padding:15px;
+
     }
 
 }

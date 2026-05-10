@@ -39,6 +39,10 @@ body{
     color:white;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 /* ================= BACKGROUND ================= */
 
 .bg{
@@ -557,6 +561,17 @@ nav{
 
 }
 
+@keyframes fadeOut{
+    0%{
+        opacity:1;
+        transform:scaleY(0);
+    }
+    100%{
+        opacity:0;
+        transform:scaleY(1);
+    }
+}
+
 </style>
 
 </head>
@@ -700,6 +715,48 @@ nav{
 </div>
 
 </section>
+
+<script>
+
+/* ================= LIGHTNING CLICK EFFECT ================= */
+
+document.addEventListener("click", function(e){
+
+    let bolt = document.createElement("div");
+
+    bolt.style.position = "fixed";
+    bolt.style.left = e.clientX + "px";
+    bolt.style.top = e.clientY + "px";
+    bolt.style.width = "6px";
+    bolt.style.height = "80px";
+    bolt.style.background = "white";
+    bolt.style.boxShadow = "0 0 20px #38bdf8";
+    bolt.style.transform = "rotate(45deg)";
+    bolt.style.animation = "fadeOut 0.4s linear";
+    bolt.style.zIndex = "9999";
+
+    document.body.appendChild(bolt);
+
+    setTimeout(()=>{
+        bolt.remove();
+    },400);
+
+});
+
+/* ================= PARALLAX GLOW ================= */
+
+document.addEventListener("mousemove", function(e){
+
+    let x = (e.clientX / window.innerWidth - 0.5) * 30;
+    let y = (e.clientY / window.innerHeight - 0.5) * 30;
+
+    document.querySelectorAll(".glow").forEach((g)=>{
+        g.style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+});
+
+</script>
 
 </body>
 </html>
