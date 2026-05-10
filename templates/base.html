@@ -3,15 +3,16 @@
 
 <head>
 
-    <meta http-equiv="Cache-Control" content="max-age=3600">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <meta charset="UTF-8">
 
 <meta
 name="viewport"
 content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+http-equiv="Cache-Control"
+content="max-age=3600"
 >
 
 <title>⚡ Electrician Management System</title>
@@ -22,20 +23,17 @@ rel="stylesheet"
 href="{{ url_for('static', filename='style.css') }}"
 >
 
-<!-- FONT AWESOME -->
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-rel="stylesheet"
->
-
 <!-- GOOGLE FONT -->
 <link
 href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
 rel="stylesheet"
 >
 
-<!-- CHART JS -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- FONT AWESOME -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+rel="stylesheet"
+>
 
 <!-- CHART JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -44,161 +42,231 @@ rel="stylesheet"
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- ================= SIDEBAR ================= -->
 
 {% if session.get('user_id') %}
 
-<nav id="navbar">
+<div class="sidebar" id="sidebar">
 
     <!-- LOGO -->
+
     <div class="logo">
+
         ⚡ Electrician System
+
     </div>
 
-    <!-- MOBILE BUTTON -->
-    <div class="menu-btn" onclick="toggleMenu()">
-        <i class="fa-solid fa-bars"></i>
+    <!-- CLOSE BUTTON MOBILE -->
+
+    <div class="close-btn" onclick="toggleSidebar()">
+
+        <i class="fa-solid fa-xmark"></i>
+
     </div>
 
-    <!-- NAV LINKS -->
-    <div class="nav-links" id="navLinks">
+    <!-- MENU -->
+
+    <div class="sidebar-links">
 
         <a href="/dashboard">
+
             <i class="fa-solid fa-chart-line"></i>
+
             Dashboard
+
         </a>
 
-        <!-- ADMIN MENU -->
         {% if session.get('role') == 'admin' %}
 
         <a href="/jobs">
+
             <i class="fa-solid fa-briefcase"></i>
+
             Jobs
+
         </a>
 
         <a href="/materials">
+
             <i class="fa-solid fa-box"></i>
+
             Materials
+
         </a>
 
         <a href="/material_usage">
+
             <i class="fa-solid fa-boxes-stacked"></i>
+
             Material Usage
+
+        </a>
+
+        <a href="/attendance">
+
+            <i class="fa-solid fa-user-check"></i>
+
+            Attendance
+
+        </a>
+
+        <a href="/location">
+
+            <i class="fa-solid fa-location-dot"></i>
+
+            Location
+
         </a>
 
         <a href="/add_task">
+
             <i class="fa-solid fa-plus"></i>
+
             Add Task
+
         </a>
 
         <a href="/electricians">
+
             <i class="fa-solid fa-users"></i>
+
             Electricians
+
+        </a>
+
+        <a href="/payments">
+
+            <i class="fa-solid fa-money-bill-wave"></i>
+
+            Payments
+
         </a>
 
         <a href="/transactions">
-            <i class="fa-solid fa-money-bill-wave"></i>
-            Payments
+
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+
+            Transactions
+
         </a>
 
         {% endif %}
 
-        <!-- ELECTRICIAN MENU -->
         {% if session.get('role') == 'electrician' %}
 
         <a href="/materials">
+
             <i class="fa-solid fa-box"></i>
+
             Materials
+
         </a>
 
         <a href="/electrician_payments">
+
             <i class="fa-solid fa-wallet"></i>
+
             Salary
+
         </a>
 
         {% endif %}
 
-        <!-- COMMON -->
         <a href="/reports">
+
             <i class="fa-solid fa-chart-pie"></i>
+
             Reports
+
         </a>
 
         <a href="/profile">
+
             <i class="fa-solid fa-user"></i>
+
             Profile
+
         </a>
 
-        <!-- THEME BUTTON -->
-        <button
-            class="theme-btn"
-            onclick="toggleTheme()"
-            type="button"
-        >
-            🌙
-        </button>
-
-        <!-- LOGOUT -->
         <a href="/logout" class="logout-btn">
+
             <i class="fa-solid fa-right-from-bracket"></i>
+
             Logout
+
         </a>
 
     </div>
 
-    <!-- PROFILE -->
-    <div class="profile">
+</div>
 
-        {% if user and user.profile_pic %}
+<!-- ================= MOBILE TOP BAR ================= -->
 
-        <img
-            src="data:image/png;base64,{{ user.profile_pic }}"
-            class="profile-img"
-        >
+<div class="topbar">
 
-        {% else %}
+    <button
+        class="menu-btn"
+        onclick="toggleSidebar()"
+    >
 
-        <img
-            src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-            class="profile-img"
-        >
+        <i class="fa-solid fa-bars"></i>
 
-        {% endif %}
+    </button>
 
-    </div>
+    <h2>
 
-</nav>
+        ⚡ EMS
+
+    </h2>
+
+    <button
+        class="theme-btn"
+        onclick="toggleTheme()"
+    >
+
+        🌙
+
+    </button>
+
+</div>
 
 {% endif %}
 
-<!-- ================= LIVE NOTIFICATION ================= -->
+<!-- ================= NOTIFICATION ================= -->
 
-<div id="notification" class="notification">
-    ⚡ Live Updates Enabled
+<div
+id="notification"
+class="notification"
+>
+
+⚡ Live Updates Enabled
+
 </div>
 
-<!-- ================= CONTENT ================= -->
+<!-- ================= MAIN CONTENT ================= -->
 
-<div class="container">
+<div class="main-content">
 
-    {% with messages = get_flashed_messages() %}
+{% with messages = get_flashed_messages() %}
 
-        {% if messages %}
+{% if messages %}
 
-            {% for m in messages %}
+{% for m in messages %}
 
-                <div class="alert">
-                    {{ m }}
-                </div>
+<div class="alert">
 
-            {% endfor %}
+    {{ m }}
 
-        {% endif %}
+</div>
 
-    {% endwith %}
+{% endfor %}
 
-    {% block content %}
-    {% endblock %}
+{% endif %}
+
+{% endwith %}
+
+{% block content %}
+{% endblock %}
 
 </div>
 
@@ -206,12 +274,12 @@ rel="stylesheet"
 
 <script>
 
-/* ================= MOBILE MENU ================= */
+/* ================= SIDEBAR ================= */
 
-function toggleMenu() {
+function toggleSidebar() {
 
     document
-    .getElementById("navLinks")
+    .getElementById("sidebar")
     .classList
     .toggle("active");
 
@@ -225,19 +293,25 @@ function toggleTheme() {
 
     if(document.body.classList.contains("light-mode")) {
 
-        localStorage.setItem("theme", "light");
+        localStorage.setItem(
+            "theme",
+            "light"
+        );
 
     } else {
 
-        localStorage.setItem("theme", "dark");
+        localStorage.setItem(
+            "theme",
+            "dark"
+        );
 
     }
 
 }
 
-/* LOAD SAVED THEME */
+/* ================= LOAD THEME ================= */
 
-window.onload = function() {
+window.addEventListener("load", function() {
 
     const savedTheme = localStorage.getItem("theme");
 
@@ -246,30 +320,6 @@ window.onload = function() {
         document.body.classList.add("light-mode");
 
     }
-
-};
-
-/* ================= AUTO HIDE NAVBAR ================= */
-
-let lastScrollTop = 0;
-
-window.addEventListener("scroll", function () {
-
-    let navbar = document.getElementById("navbar");
-
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    if(scrollTop > lastScrollTop) {
-
-        navbar.style.top = "-120px";
-
-    } else {
-
-        navbar.style.top = "0";
-
-    }
-
-    lastScrollTop = scrollTop;
 
 });
 
@@ -289,7 +339,7 @@ function resetTimer() {
 
 }
 
-window.onload = resetTimer;
+document.onload = resetTimer;
 
 document.onmousemove = resetTimer;
 document.onkeypress = resetTimer;
@@ -300,7 +350,8 @@ document.onscroll = resetTimer;
 
 setInterval(() => {
 
-    const notification = document.getElementById("notification");
+    const notification =
+    document.getElementById("notification");
 
     notification.classList.add("show");
 
@@ -312,37 +363,47 @@ setInterval(() => {
 
 }, 15000);
 
-</script>
-
-<script>
+/* ================= GPS ================= */
 
 navigator.geolocation.getCurrentPosition(
 
 (position) => {
 
-    console.log(
-        "Latitude:",
-        position.coords.latitude
-    );
+console.log(
+"Latitude:",
+position.coords.latitude
+);
 
-    console.log(
-        "Longitude:",
-        position.coords.longitude
-    );
+console.log(
+"Longitude:",
+position.coords.longitude
+);
 
 },
 
 (error) => {
 
-    console.log(
-        "Location Permission Denied"
-    );
+console.log(
+"Location Permission Denied"
+);
 
 }
 
 );
 
+/* ================= AUTO REFRESH ================= */
+
+/* 10 MINUTES */
+
+setInterval(() => {
+
+location.reload();
+
+}, 600000);
+
 </script>
+
+<!-- SOCKET -->
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
@@ -352,25 +413,7 @@ const socket = io();
 
 socket.on('connect', () => {
 
-console.log("Connected");
-
-});
-
-</script>
-
-<script>
-
-new Chart(document.getElementById('chart'), {
-
-type:'bar',
-
-data:{
-labels:['Completed','Pending'],
-datasets:[{
-label:'Tasks',
-data:[10,5]
-}]
-}
+console.log("Socket Connected");
 
 });
 

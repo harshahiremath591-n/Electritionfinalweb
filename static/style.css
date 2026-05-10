@@ -682,3 +682,66 @@ canvas{
     }
 
 }
+
+.main-layout{
+    display:flex;
+    min-height:100vh;
+    background:#0f172a;
+}
+
+.right-sidebar{
+    width:260px;
+    background:#111827;
+    padding:25px;
+    position:fixed;
+    right:0;
+    top:0;
+    height:100%;
+    overflow-y:auto;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.4);
+    z-index:999;
+}
+
+.right-sidebar .logo{
+    color:#38bdf8;
+    margin-bottom:30px;
+    text-align:center;
+}
+
+.right-sidebar a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    padding:14px;
+    margin-bottom:12px;
+    border-radius:12px;
+    background:#1e293b;
+    transition:0.3s;
+    font-weight:bold;
+}
+
+.right-sidebar a:hover{
+    background:#38bdf8;
+    transform:translateX(-5px);
+}
+
+.main-content{
+    flex:1;
+    padding:25px;
+    margin-right:260px;
+    width:100%;
+}
+
+@media(max-width:768px){
+
+    .right-sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+    }
+
+    .main-content{
+        margin-right:0;
+    }
+
+}
