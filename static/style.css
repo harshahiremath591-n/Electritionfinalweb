@@ -375,8 +375,18 @@ table td{
 
 /* ================= MOBILE ================= */
 
+@media(max-width:600px){
 
+    .card{
+        flex-direction:column;
+        padding:30px;
+    }
 
+    .payment-page{
+        padding:20px;
+    }
+
+}
 
 /* ================= REPORT LINK COLOR ================= */
 
