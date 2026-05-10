@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, flash, send_file
 from config import Config
 from fpdf import FPDF
+from flask_socketio import SocketIO
 from models import (
     db,
     User,
