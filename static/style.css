@@ -745,3 +745,95 @@ canvas{
     }
 
 }
+
+/* ================= SIDEBAR BUTTONS ================= */
+
+.sidebar-links {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin-top: 20px;
+
+}
+
+.sidebar-links a {
+
+    text-decoration: none;
+
+}
+
+.side-btn {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #1e293b,
+        #0f172a
+    );
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    box-shadow: 0 0 10px rgba(56,189,248,0.2);
+
+}
+
+.side-btn:hover {
+
+    transform: translateX(5px);
+
+    background: linear-gradient(
+        135deg,
+        #0ea5e9,
+        #2563eb
+    );
+
+    box-shadow: 0 0 20px rgba(14,165,233,0.5);
+
+}
+
+.logout-side-btn {
+
+    background: linear-gradient(
+        135deg,
+        #dc2626,
+        #991b1b
+    );
+
+}
+
+.logout-side-btn:hover {
+
+    background: linear-gradient(
+        135deg,
+        #ef4444,
+        #b91c1c
+    );
+
+}

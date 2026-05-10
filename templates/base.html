@@ -56,23 +56,30 @@ rel="stylesheet"
 
     </div>
 
-    <!-- CLOSE BUTTON MOBILE -->
+    <!-- CLOSE BUTTON -->
 
-    <div class="close-btn" onclick="toggleSidebar()">
+    <div
+        class="close-btn"
+        onclick="toggleSidebar()"
+    >
 
         <i class="fa-solid fa-xmark"></i>
 
     </div>
 
-    <!-- MENU -->
+    <!-- ================= MENU ================= -->
 
     <div class="sidebar-links">
 
         <a href="/dashboard">
 
-            <i class="fa-solid fa-chart-line"></i>
+            <button class="side-btn">
 
-            Dashboard
+                <i class="fa-solid fa-chart-line"></i>
+
+                Dashboard
+
+            </button>
 
         </a>
 
@@ -80,73 +87,109 @@ rel="stylesheet"
 
         <a href="/jobs">
 
-            <i class="fa-solid fa-briefcase"></i>
+            <button class="side-btn">
 
-            Jobs
+                <i class="fa-solid fa-briefcase"></i>
+
+                Jobs
+
+            </button>
 
         </a>
 
         <a href="/materials">
 
-            <i class="fa-solid fa-box"></i>
+            <button class="side-btn">
 
-            Materials
+                <i class="fa-solid fa-box"></i>
+
+                Materials
+
+            </button>
 
         </a>
 
         <a href="/material_usage">
 
-            <i class="fa-solid fa-boxes-stacked"></i>
+            <button class="side-btn">
 
-            Material Usage
+                <i class="fa-solid fa-boxes-stacked"></i>
+
+                Material Usage
+
+            </button>
 
         </a>
 
         <a href="/attendance">
 
-            <i class="fa-solid fa-user-check"></i>
+            <button class="side-btn">
 
-            Attendance
+                <i class="fa-solid fa-user-check"></i>
+
+                Attendance
+
+            </button>
 
         </a>
 
         <a href="/location">
 
-            <i class="fa-solid fa-location-dot"></i>
+            <button class="side-btn">
 
-            Location
+                <i class="fa-solid fa-location-dot"></i>
+
+                Location
+
+            </button>
 
         </a>
 
         <a href="/add_task">
 
-            <i class="fa-solid fa-plus"></i>
+            <button class="side-btn">
 
-            Add Task
+                <i class="fa-solid fa-plus"></i>
+
+                Add Task
+
+            </button>
 
         </a>
 
         <a href="/electricians">
 
-            <i class="fa-solid fa-users"></i>
+            <button class="side-btn">
 
-            Electricians
+                <i class="fa-solid fa-users"></i>
+
+                Electricians
+
+            </button>
 
         </a>
 
         <a href="/payments">
 
-            <i class="fa-solid fa-money-bill-wave"></i>
+            <button class="side-btn">
 
-            Payments
+                <i class="fa-solid fa-money-bill-wave"></i>
+
+                Payments
+
+            </button>
 
         </a>
 
         <a href="/transactions">
 
-            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <button class="side-btn">
 
-            Transactions
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                Transactions
+
+            </button>
 
         </a>
 
@@ -156,17 +199,25 @@ rel="stylesheet"
 
         <a href="/materials">
 
-            <i class="fa-solid fa-box"></i>
+            <button class="side-btn">
 
-            Materials
+                <i class="fa-solid fa-box"></i>
+
+                Materials
+
+            </button>
 
         </a>
 
         <a href="/electrician_payments">
 
-            <i class="fa-solid fa-wallet"></i>
+            <button class="side-btn">
 
-            Salary
+                <i class="fa-solid fa-wallet"></i>
+
+                Salary
+
+            </button>
 
         </a>
 
@@ -174,25 +225,37 @@ rel="stylesheet"
 
         <a href="/reports">
 
-            <i class="fa-solid fa-chart-pie"></i>
+            <button class="side-btn">
 
-            Reports
+                <i class="fa-solid fa-chart-pie"></i>
+
+                Reports
+
+            </button>
 
         </a>
 
         <a href="/profile">
 
-            <i class="fa-solid fa-user"></i>
+            <button class="side-btn">
 
-            Profile
+                <i class="fa-solid fa-user"></i>
+
+                Profile
+
+            </button>
 
         </a>
 
-        <a href="/logout" class="logout-btn">
+        <a href="/logout">
 
-            <i class="fa-solid fa-right-from-bracket"></i>
+            <button class="side-btn logout-side-btn">
 
-            Logout
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Logout
+
+            </button>
 
         </a>
 
@@ -200,7 +263,7 @@ rel="stylesheet"
 
 </div>
 
-<!-- ================= MOBILE TOP BAR ================= -->
+<!-- ================= TOPBAR ================= -->
 
 <div class="topbar">
 
@@ -232,7 +295,7 @@ rel="stylesheet"
 
 {% endif %}
 
-<!-- ================= NOTIFICATION ================= -->
+<!-- ================= LIVE NOTIFICATION ================= -->
 
 <div
 id="notification"
@@ -247,26 +310,26 @@ class="notification"
 
 <div class="main-content">
 
-{% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages() %}
 
-{% if messages %}
+        {% if messages %}
 
-{% for m in messages %}
+            {% for m in messages %}
 
-<div class="alert">
+                <div class="alert">
 
-    {{ m }}
+                    {{ m }}
 
-</div>
+                </div>
 
-{% endfor %}
+            {% endfor %}
 
-{% endif %}
+        {% endif %}
 
-{% endwith %}
+    {% endwith %}
 
-{% block content %}
-{% endblock %}
+    {% block content %}
+    {% endblock %}
 
 </div>
 
@@ -311,13 +374,16 @@ function toggleTheme() {
 
 /* ================= LOAD THEME ================= */
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
 
-    const savedTheme = localStorage.getItem("theme");
+    const savedTheme =
+    localStorage.getItem("theme");
 
     if(savedTheme === "light") {
 
-        document.body.classList.add("light-mode");
+        document.body.classList.add(
+            "light-mode"
+        );
 
     }
 
@@ -339,7 +405,7 @@ function resetTimer() {
 
 }
 
-document.onload = resetTimer;
+window.onload = resetTimer;
 
 document.onmousemove = resetTimer;
 document.onkeypress = resetTimer;
@@ -403,7 +469,7 @@ location.reload();
 
 </script>
 
-<!-- SOCKET -->
+<!-- ================= SOCKET IO ================= -->
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
