@@ -15,7 +15,7 @@ from models import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from flask_socketio import SocketIO
+
 
 
 import os
@@ -31,7 +31,7 @@ app.config.from_object(Config)
 
 app.permanent_session_lifetime = timedelta(minutes=10)
 
-socketio = SocketIO(app)
+
 
 # ================= RAZORPAY =================
 

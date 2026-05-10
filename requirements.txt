@@ -1,8 +1,8 @@
 Flask
 Flask-SQLAlchemy
+Flask-SocketIO
 Werkzeug
 razorpay
 gunicorn
 fpdf
-flask-socketio
 eventlet
