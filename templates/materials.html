@@ -79,7 +79,7 @@
                 required
             >
 
-            <button type="submit">
+            <button type="submit" onclick="this.disabled=true; this.form.submit();">
                 ✅ Add Material
             </button>
 
@@ -219,7 +219,43 @@ setInterval(() => {
 
     location.reload();
 
-}, 10000);
+}, 15000);
+
+</script>
+
+<script>
+
+let typing = false;
+
+const inputs = document.querySelectorAll(
+    "input"
+);
+
+inputs.forEach((input) => {
+
+    input.addEventListener("focus", () => {
+
+        typing = true;
+
+    });
+
+    input.addEventListener("blur", () => {
+
+        typing = false;
+
+    });
+
+});
+
+setInterval(() => {
+
+    if (!typing) {
+
+        location.reload();
+
+    }
+
+}, 60000);
 
 </script>
 
