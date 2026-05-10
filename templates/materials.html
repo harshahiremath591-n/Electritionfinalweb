@@ -203,59 +203,29 @@
 
 <!-- ================= LIVE AUTO REFRESH ================= -->
 
-<script>
-
-setInterval(() => {
-
-    window.location.reload();
-
-}, 15000);
-
-</script>
 
 <script>
-
-setInterval(() => {
-
-    location.reload();
-
-}, 15000);
-
-</script>
-
-<script>
-
 let typing = false;
 
-const inputs = document.querySelectorAll(
-    "input"
-);
+document.querySelectorAll("input").forEach(input => {
 
-inputs.forEach((input) => {
-
-    input.addEventListener("focus", () => {
-
-        typing = true;
-
-    });
-
-    input.addEventListener("blur", () => {
-
-        typing = false;
-
-    });
+    input.addEventListener("focus", () => typing = true);
+    input.addEventListener("blur", () => typing = false);
 
 });
 
+/* SAFE AUTO REFRESH (NO DOUBLE RELOAD BUG) */
 setInterval(() => {
 
-    if (!typing) {
-
+    if(!typing){
         location.reload();
-
     }
 
 }, 60000);
+
+</script>
+
+
 
 </script>
 
