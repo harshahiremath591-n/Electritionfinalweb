@@ -26,7 +26,7 @@ import shutil
 
 app = Flask(__name__)
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='threading')
 
 app.secret_key = "harsha_secret"
 
@@ -1321,8 +1321,4 @@ def logout():
 # ================= RUN =================
 
 if __name__ == "__main__":
-    socketio.run(
-        app,
-        host="0.0.0.0",
-        port=5000
-    )
+    socketio.run(app, host="0.0.0.0", port=5000)
