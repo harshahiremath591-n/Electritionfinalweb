@@ -1,10 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-
 db = SQLAlchemy()
 
 # ================= USERS =================
+
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -15,15 +15,28 @@ class User(db.Model):
         nullable=False
     )
 
-    password = db.Column(db.String(200))
+    password = db.Column(
+        db.String(200),
+        nullable=False
+    )
 
     role = db.Column(db.String(20))
 
     profile_pic = db.Column(db.Text)
-    
-    tasks = db.relationship('Task', backref='electrician', lazy=True)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    tasks = db.relationship(
+        'Task',
+        backref='electrician',
+        lazy=True
+    )
 
 # ================= JOBS =================
+
 class Job(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -33,6 +46,7 @@ class Job(db.Model):
     location = db.Column(db.String(200))
 
 # ================= TASKS =================
+
 class Task(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -62,11 +76,9 @@ class Task(db.Model):
     )
 
     report = db.Column(db.String(200))
-    
-    
-    
 
 # ================= MATERIALS =================
+
 class Material(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -77,24 +89,20 @@ class Material(db.Model):
 
     cost = db.Column(db.Float)
 
-#================== TASK MATERIALS =================
-    class TaskMaterial(db.Model):
+# ================= MATERIAL USAGE =================
 
-        id = db.Column(db.Integer, primary_key=True)
+class MaterialUsage(db.Model):
 
-    task_id = db.Column(
-        db.Integer,
-        db.ForeignKey('task.id')
-    )    
-    material_id = db.Column(
-        db.Integer,
-        db.ForeignKey('material.id')
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    quantity_used = db.Column(db.Integer)
-    
-    
+    electrician_id = db.Column(db.Integer)
+
+    material_id = db.Column(db.Integer)
+
+    used_quantity = db.Column(db.Integer)
+
 # ================= PAYMENTS =================
+
 class Payment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -107,20 +115,19 @@ class Payment(db.Model):
 
     payment_type = db.Column(db.String(100))
 
-    status = db.Column(db.String(50))
+    payment_method = db.Column(db.String(100))
 
-    #====electrician payment details====
     transaction_id = db.Column(db.String(100))
 
-payment_method = db.Column(db.String(50))
+    status = db.Column(db.String(50))
 
-created_at = db.Column(
-    db.DateTime,
-    default=datetime.utcnow
-)
-    
-    #====attendance details====
-    
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+# ================= ATTENDANCE =================
+
 class Attendance(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -148,8 +155,8 @@ class MaterialUsage(db.Model):
     
     
     
-    #====Location Tracking====
-    
+# ================= LOCATION =================
+
 class Location(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -160,4 +167,7 @@ class Location(db.Model):
 
     longitude = db.Column(db.String(100))
 
-    updated_at = db.Column(db.DateTime)
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )

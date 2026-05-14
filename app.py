@@ -25,12 +25,25 @@ import razorpay
 import shutil
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 app.secret_key = "harsha_secret"
 
 app.config.from_object(Config)
 
-app.permanent_session_lifetime = timedelta(minutes=10)
+# ================= SESSION SECURITY =================
+
+app.config['SESSION_COOKIE_NAME'] = 'electrician_session'
+
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=3650)
+
+# ================= LONG LIFE SESSION =================
+
+app.permanent_session_lifetime = timedelta(days=3650)
 
 
 
@@ -55,15 +68,26 @@ with app.app_context():
 def login_required(f):
 
     @wraps(f)
-
     def wrapper(*args, **kwargs):
 
         if not session.get('user_id'):
+
+            flash("Please Login")
+
             return redirect('/login')
 
         return f(*args, **kwargs)
 
     return wrapper
+
+# ================= AUTO SESSION REFRESH =================
+
+@app.before_request
+def make_session_permanent():
+
+    session.permanent = True
+
+    session.modified = True
 
 # ================= HOME =================
 
@@ -94,11 +118,17 @@ def login():
 
             session.clear()
 
+# ================= PERMANENT LOGIN =================
+
             session.permanent = True
 
             session['user_id'] = user.id
+
             session['role'] = user.role
+
             session['username'] = user.username
+
+            session.modified = True
 
             flash("✅ Login Successful")
 
@@ -1290,4 +1320,8 @@ def logout():
 # ================= RUN =================
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        port=5000
+    )

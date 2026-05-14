@@ -19,6 +19,17 @@ class Config:
 
     UPLOAD_FOLDER = "static/uploads"
 
+   # SESSION SETTINGS
+
+    REMEMBER_COOKIE_DURATION = 3650
+
+    PERMANENT_SESSION_LIFETIME =  timedelta(days=3650)
+
+    SESSION_COOKIE_HTTPONLY = True
+
+    SESSION_COOKIE_SAMESITE = "Lax"
+
+    SESSION_COOKIE_SECURE = False
     # ================= RAZORPAY =================
 
     RAZORPAY_KEY_ID = "rzp_live_SnEyLRRXXElOT0"
