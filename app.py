@@ -28,9 +28,11 @@ app = Flask(__name__)
 
 socketio = SocketIO(app, async_mode='threading')
 
+app.config.from_object(Config)
+
 app.secret_key = "harsha_secret"
 
-app.config.from_object(Config)
+
 
 # ================= SESSION SECURITY =================
 

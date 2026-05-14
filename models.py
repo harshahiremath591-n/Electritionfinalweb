@@ -143,15 +143,15 @@ class Attendance(db.Model):
     
     #====Material Usage Tracking====
     
-class MaterialUsage(db.Model):
+#class MaterialUsage(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    #id = db.Column(db.Integer, primary_key=True)
 
-    task_id = db.Column(db.Integer)
+    #task_id = db.Column(db.Integer)
 
-    material_id = db.Column(db.Integer)
+    #material_id = db.Column(db.Integer)
 
-    quantity_used = db.Column(db.Integer)
+    #quantity_used = db.Column(db.Integer)
     
     
     
