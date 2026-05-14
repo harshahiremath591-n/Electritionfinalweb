@@ -25,6 +25,7 @@ import razorpay
 import shutil
 
 app = Flask(__name__)
+
 socketio = SocketIO(app)
 
 app.secret_key = "harsha_secret"
