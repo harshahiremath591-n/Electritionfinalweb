@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 class Config:
 
@@ -19,7 +20,7 @@ class Config:
 
     UPLOAD_FOLDER = "static/uploads"
 
-   # SESSION SETTINGS
+    # SESSION SETTINGS
 
     REMEMBER_COOKIE_DURATION = 3650
 
@@ -30,6 +31,7 @@ class Config:
     SESSION_COOKIE_SAMESITE = "Lax"
 
     SESSION_COOKIE_SECURE = False
+
     # ================= RAZORPAY =================
 
     RAZORPAY_KEY_ID = "rzp_live_SnEyLRRXXElOT0"
